@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loading } from "@/components/gate";
+import { PageHeader } from "@/components/ui";
 import { deviceTimeZone, localDay } from "@/lib/chart";
 import { letterValues, type NameSystem } from "@/lib/numerology/calc";
 import { NUMBER_MEANINGS, numerologyProfile, PERSONAL_YEAR } from "@/lib/numerology/meanings";
@@ -43,14 +44,7 @@ export default function NumerologyPage() {
 
   return (
     <div className="flex flex-col gap-10">
-      <Link href="/" className="link self-start py-2.5">
-        ← Today
-      </Link>
-      <header className="px-1">
-        <p className="eyebrow">Your numbers</p>
-        <h1 className="mt-1 title">Numerology</h1>
-        <p className="mt-2 text-muted">From your date of birth and your name.</p>
-      </header>
+      <PageHeader title="Your numbers" sub="Numerology from your birth date and your name." />
 
       <section className="grid gap-3 sm:grid-cols-3">
         {core.map((c) => {

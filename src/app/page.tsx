@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { MoonPhaseIcon, Sparkle, Star8, SunFace } from "@/components/art";
 import { Loading } from "@/components/gate";
 import { ProfileForm } from "@/components/profile-form";
-import { AreaTile, LinkRow, ReadingCard, StarProgress } from "@/components/ui";
+import { AreaTile, ReadingCard, StarProgress } from "@/components/ui";
 import { chartFor, deviceTimeZone, localDay, useChart } from "@/lib/chart";
 import { fmtTime } from "@/lib/format";
 import { bigThree, moonNow, moonSignChange } from "@/lib/sky";
@@ -103,10 +103,6 @@ function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<
           </div>
         </div>
 
-        <div className="mt-2 flex flex-col gap-2.5">
-          <LinkRow href="/week/" title="Your week" sub="Where each planet is heading" />
-          <LinkRow href="/numerology/" title="Your numbers" sub="Life path and today's personal day" />
-        </div>
       </div>
     </div>
   );
