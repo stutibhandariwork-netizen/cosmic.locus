@@ -1,15 +1,18 @@
 import { describe, expect, it } from "vitest";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { numeralOf, voiceOf } from "@/lib/content/tarot-voice";
 import { DECK } from "@/lib/tarot/deck";
 import { checkClarifier, checkPick, shuffleDeck, type DrawState } from "@/lib/tarot/shuffle";
 import { SPREADS, yesNoVerdict } from "@/lib/tarot/spreads";
 
 describe("deck", () => {
-  it("has 78 unique cards indexed 0-77, each with a headline and a line in the brand voice", () => {
+  it("has 78 unique cards indexed 0-77, each with artwork and a headline and line in the brand voice", () => {
     expect(DECK).toHaveLength(78);
     expect(DECK.map((c) => c.index)).toEqual(Array.from({ length: 78 }, (_, i) => i));
     expect(new Set(DECK.map((c) => c.id)).size).toBe(78);
     for (const c of DECK) {
+      expect(existsSync(path.join(process.cwd(), "public", "tarot", `${c.id}.jpg`)), c.id).toBe(true);
       const v = voiceOf(c);
       expect(v.headline.length, c.id).toBeGreaterThan(5);
       expect(v.line.length, c.id).toBeGreaterThan(15);

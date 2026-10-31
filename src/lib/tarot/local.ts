@@ -60,3 +60,22 @@ export function viewOf(s: TarotSession) {
     verdict: s.spread === "YES_NO" && cards[0] ? yesNoVerdict(DECK[cards[0].cardIndex], cards[0].reversed) : null,
   };
 }
+
+/**
+ * A quick pull from the Tarot screen (card of the day): the deck was shuffled when the fan
+ * appeared and is saved with the pick. Quick pulls are read upright.
+ */
+export function saveQuickReading(spread: SpreadKey, order: number[], picks: number[], question: string | null = null): string {
+  const session: TarotSession = {
+    id: newId(),
+    spread,
+    question,
+    createdAt: new Date().toISOString(),
+    deckOrder: order,
+    reversals: order.map(() => false),
+    picks,
+    clarifiers: [],
+  };
+  update((d) => ({ ...d, tarot: [session, ...d.tarot] }));
+  return session.id;
+}

@@ -84,3 +84,27 @@ export function BottomNav() {
     </nav>
   );
 }
+
+/** Wordmark and Settings button above every page except Today (which has its own) and onboarding. */
+export function TopBar() {
+  const pathname = usePathname();
+  if (pathname === "/" || pathname.startsWith("/settings")) return null;
+  return (
+    <div className="mx-auto flex max-w-[480px] items-center justify-between px-4 pt-3 -mb-3">
+      <Link href="/" className="flex min-h-11 items-center gap-2 font-display text-lg font-semibold">
+        <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden>
+          <circle cx="12" cy="12" r="6" fill="var(--butter)" stroke="var(--cocoa)" strokeWidth="1.5" />
+          <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1" stroke="var(--ochre)" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        Cosmic Locus
+      </Link>
+      <Link href="/settings/" aria-label="Settings" className="grid size-11 place-items-center rounded-full border-2 border-outline bg-surface hover:bg-surface-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+          <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
+          <circle cx="16" cy="7" r="2" />
+          <circle cx="8" cy="17" r="2" />
+        </svg>
+      </Link>
+    </div>
+  );
+}

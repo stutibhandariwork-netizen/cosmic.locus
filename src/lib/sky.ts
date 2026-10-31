@@ -1,6 +1,6 @@
 import { MoonPhase } from "astronomy-engine";
 import { lahiriAyanamsa, signOf, SIGNS, siderealLongitude, type NatalChart } from "./engine";
-import { norm360 } from "./engine/math";
+import { angleDiff, bisect, nakshatraOf, norm360 } from "./engine/math";
 import type { Prefs } from "./store";
 
 export type ZodiacSystem = Prefs["system"];
@@ -19,12 +19,26 @@ export function bigThree(chart: NatalChart, system: ZodiacSystem) {
   };
 }
 
-/** Where the Moon is right now, in the chosen zodiac. */
-export function moonNow(at: Date, system: ZodiacSystem) {
+const moonLongitude = (at: Date, system: ZodiacSystem) => {
   const sid = siderealLongitude("Moon", at);
-  const lon = system === "western" ? norm360(sid + lahiriAyanamsa(at)) : sid;
+  return system === "western" ? norm360(sid + lahiriAyanamsa(at)) : sid;
+};
+
+/** Where the Moon is right now, in the chosen zodiac. The nakshatra is always sidereal. */
+export function moonNow(at: Date, system: ZodiacSystem) {
+  const lon = moonLongitude(at, system);
   const elongation = MoonPhase(at);
-  return { sign: signOf(lon), signName: SIGNS[signOf(lon)].en, elongation, phase: phaseName(elongation) };
+  const nak = nakshatraOf(siderealLongitude("Moon", at));
+  return { sign: signOf(lon), signName: SIGNS[signOf(lon)].en, nakshatra: nak.name, elongation, phase: phaseName(elongation) };
+}
+
+/** When the Moon next changes sign between `from` and `to` (it moves about 13° a day, so at most once). */
+export function moonSignChange(from: Date, to: Date, system: ZodiacSystem): { at: Date; signName: string } | null {
+  const start = signOf(moonLongitude(from, system));
+  if (signOf(moonLongitude(to, system)) === start) return null;
+  const boundary = ((start + 1) % 12) * 30;
+  const at = bisect((d) => angleDiff(moonLongitude(d, system), boundary), from, to);
+  return { at, signName: SIGNS[(start + 1) % 12].en };
 }
 
 export function phaseName(elongation: number): string {

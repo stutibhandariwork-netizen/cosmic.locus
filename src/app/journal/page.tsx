@@ -10,7 +10,7 @@ import { fmtLocal } from "@/lib/format";
 import { journalPrompt } from "@/lib/journal/core";
 import { newId, update, useData, type JournalEntry, type TarotSession } from "@/lib/store";
 import { PageHeader } from "@/components/ui";
-import { voiceOf } from "@/lib/content/tarot-voice";
+import { voiceOf, YES_NO_ANSWER } from "@/lib/content/tarot-voice";
 import { viewOf } from "@/lib/tarot/local";
 import { DECK } from "@/lib/tarot/deck";
 
@@ -33,13 +33,20 @@ function tarotLink(s: TarotSession): JournalEntry["link"] {
 }
 
 /** A card pulled on the Tarot screen (card of the day, 3 cards, yes/no), passed as ?card=1,2,3&spread=three. */
-function cardsLink(param: string, spread: string | null): JournalEntry["link"] {
+function cardsLink(param: string, spread: string | null, question: string | null): JournalEntry["link"] {
   const cards = param.split(",").map(Number).filter((i) => Number.isInteger(i) && i >= 0 && i < DECK.length).map((i) => DECK[i]);
   if (!cards.length) return null;
   if (spread === "three" && cards.length === 3) {
     return {
       title: "Past, present, future",
       summary: cards.map((c, i) => `${["Past", "Present", "Future"][i]}: ${c.name}`).join(" · "),
+      href: "/tarot/",
+    };
+  }
+  if (spread === "yesno") {
+    return {
+      title: question ? `Yes / No: “${question.slice(0, 200)}”` : "Yes / No",
+      summary: `${YES_NO_ANSWER[cards[0].nature]} ${cards[0].name}: ${voiceOf(cards[0]).line}`,
       href: "/tarot/",
     };
   }
@@ -64,7 +71,7 @@ function Journal() {
 
   if (!data) return <Loading />;
   const linkedSession = tarotId ? data.tarot.find((s) => s.id === tarotId) : undefined;
-  const link = linkedSession ? tarotLink(linkedSession) : cardParam ? cardsLink(cardParam, params.get("spread")) : null;
+  const link = linkedSession ? tarotLink(linkedSession) : cardParam ? cardsLink(cardParam, params.get("spread"), params.get("q")) : null;
 
   function save(e: React.FormEvent) {
     e.preventDefault();

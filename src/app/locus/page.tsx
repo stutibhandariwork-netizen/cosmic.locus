@@ -26,6 +26,8 @@ function Locus({ profile, chart, timeNote, system }: { profile: Profile; chart: 
   const three = bigThree(chart, system);
   const vedic = system === "vedic";
   const zodiac = vedic ? "measured against the stars (sidereal zodiac, Lahiri)" : "in the tropical zodiac";
+  // Sanskrit sign names belong to the sidereal (Vedic) signs only.
+  const sa = (sign: number) => (vedic ? SIGNS[sign].sa : undefined);
   const born = fmtLocal(`${profile.birthDate}T12:00:00Z`, "UTC");
 
   return (
@@ -54,19 +56,21 @@ function Locus({ profile, chart, timeNote, system }: { profile: Profile; chart: 
 
       <h2 className="h2 mt-1">Your big three</h2>
       <ul className="flex flex-col gap-2.5">
-        <BigThreeRow dot="bg-ochre" title={`Sun · ${three.sun.signName}`} line={SUN_LINES[three.sun.sign]}>
+        <BigThreeRow dot="bg-ochre" title={`Sun · ${three.sun.signName}`} sa={sa(three.sun.sign)} line={SUN_LINES[three.sun.sign]}>
           On {born} the Sun was at {dms(three.sun.degree)} {three.sun.signName}, {zodiac}. Your Sun sign is the heart of you: what you&apos;re building and what
           makes you feel most alive.
+          {vedic && ` Its nakshatra is ${chart.planets.Sun.nakshatra.name}, pada ${chart.planets.Sun.nakshatra.pada}.`}
         </BigThreeRow>
-        <BigThreeRow dot="bg-blush" title={`Moon · ${three.moon.signName}`} line={MOON_LINES[three.moon.sign]}>
+        <BigThreeRow dot="bg-blush" title={`Moon · ${three.moon.signName}`} sa={sa(three.moon.sign)} line={MOON_LINES[three.moon.sign]}>
           The Moon was at {dms(three.moon.degree)} {three.moon.signName}, {zodiac}. Your Moon sign is your inner weather: how you feel and what soothes you.
           {vedic &&
             ` In Vedic astrology it matters most, so your daily reading is counted from it. Its nakshatra is ${chart.planets.Moon.nakshatra.name}, pada ${chart.planets.Moon.nakshatra.pada}.`}
         </BigThreeRow>
         {three.rising ? (
-          <BigThreeRow dot="bg-periwinkle" title={`Rising · ${three.rising.signName}`} line={RISING_LINES[three.rising.sign]}>
+          <BigThreeRow dot="bg-periwinkle" title={`Rising · ${three.rising.signName}`} sa={sa(three.rising.sign)} line={RISING_LINES[three.rising.sign]}>
             {three.rising.signName} was coming up over the eastern horizon at {profile.birthTime} in {profile.place.label}, at {dms(three.rising.degree)}. Your
             rising sign colours first impressions and sets the order of your houses.
+            {vedic && chart.lagna && ` In Vedic astrology it is your lagna, in ${chart.lagna.nakshatra.name} nakshatra, pada ${chart.lagna.nakshatra.pada}.`}
             {timeNote && ` ${timeNote}`}
           </BigThreeRow>
         ) : (
@@ -125,7 +129,7 @@ function Locus({ profile, chart, timeNote, system }: { profile: Profile; chart: 
   );
 }
 
-function BigThreeRow({ dot, title, line, children }: { dot: string; title: string; line: string; children: React.ReactNode }) {
+function BigThreeRow({ dot, title, sa, line, children }: { dot: string; title: string; sa?: string; line: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const id = `why-${title.split(" ")[0].toLowerCase()}`;
   return (
@@ -133,7 +137,10 @@ function BigThreeRow({ dot, title, line, children }: { dot: string; title: strin
       <div className="flex items-center gap-3">
         <span className={`size-3.5 shrink-0 rounded-full ${dot}`} aria-hidden />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <p className="font-bold">{title}</p>
+          <p className="font-bold">
+            {title}
+            {sa && <span className="font-normal text-muted"> · {sa}</span>}
+          </p>
           <p className="text-[15px] leading-snug text-muted">{line}</p>
         </div>
         <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} className="min-h-11 shrink-0 text-[15px] font-bold text-label">

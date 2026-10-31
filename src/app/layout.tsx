@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Fraunces } from "next/font/google";
-import { BottomNav } from "@/components/nav";
+import { BottomNav, TopBar } from "@/components/nav";
 import { BASE } from "@/lib/base-path";
 import "./globals.css";
 
@@ -32,13 +32,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className={`${display.variable} ${body.variable} min-h-dvh`}>
+        <TopBar />
         <main className="mx-auto w-full max-w-[480px] px-4 pt-6 pb-8">{children}</main>
         <footer className="mx-auto max-w-[480px] px-5 pb-32 text-[13px] text-muted">
           For reflection and fun. Everything you enter stays on this device. Place data ©{" "}
           <a className="underline" href="https://www.geonames.org/">
             GeoNames
           </a>{" "}
-          (CC BY 4.0).
+          (CC BY 4.0). Tarot art: Rider-Waite-Smith, 1909 (public domain).
         </footer>
         <BottomNav />
       </body>

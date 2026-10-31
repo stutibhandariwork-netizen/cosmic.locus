@@ -8,7 +8,7 @@ Everything runs in the visitor's browser: the chart is calculated on the device,
 
 - **Today:** a daily reading counted from where today's Moon sits relative to your Moon sign (Vedic) or Sun sign (Western), with love, work and self-care notes, the Moon's phase, and a "Read deeper" page. The same reading all day; a new one tomorrow.
 - **Your Locus:** a zodiac wheel and your big three (Sun, Moon, rising), in Vedic (sidereal, Lahiri) or Western (tropical). Vedic mode adds the North Indian chart (D1 and D9), planet placements, yogas, Vimshottari dasha and Saturn cycles. Calculated with [astronomy-engine](https://github.com/cosinekitty/astronomy).
-- **Tarot:** card of the day, three cards (past, present, future) and yes / no, plus deeper spreads where you pick your own cards. Decks are shuffled with the Web Crypto API. Card artwork is a placeholder until illustrations are commissioned.
+- **Tarot:** card of the day, three cards (past, present, future) and yes / no, plus deeper spreads where you pick your own cards. Every card is pulled from a face-down deck shuffled with the Web Crypto API, and shows the 1909 Rider-Waite-Smith artwork (public domain).
 - **Journal:** notes, daily prompts and saved tarot pulls.
 - Also: this week's transits, numerology, and a "Comfort reading" setting for a calmer Today screen.
 

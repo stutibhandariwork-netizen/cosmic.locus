@@ -7,7 +7,8 @@ import { Loading } from "@/components/gate";
 import { ProfileForm } from "@/components/profile-form";
 import { AreaTile, LinkRow, ReadingCard, StarProgress } from "@/components/ui";
 import { chartFor, deviceTimeZone, localDay, useChart } from "@/lib/chart";
-import { bigThree, moonNow } from "@/lib/sky";
+import { fmtTime } from "@/lib/format";
+import { bigThree, moonNow, moonSignChange } from "@/lib/sky";
 import { update, useData, type Prefs, type Profile } from "@/lib/store";
 import { greetingFor, todayReading } from "@/lib/today";
 
@@ -25,6 +26,7 @@ function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<
   const day = useMemo(() => localDay(now, tz), [now, tz]);
   const reading = useMemo(() => todayReading(profile, chart, prefs.system, day), [profile, chart, prefs.system, day]);
   const moon = useMemo(() => moonNow(now, prefs.system), [now, prefs.system]);
+  const change = useMemo(() => moonSignChange(now, new Date(day.start.getTime() + 86_400_000), prefs.system), [now, day, prefs.system]);
   const calm = prefs.comfort;
   const heroH = calm ? 220 : 262;
   const dateLabel = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(now).replace(" ", " · ");
@@ -88,10 +90,17 @@ function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<
 
         <div className="flex items-center gap-3 rounded-[18px] border-2 border-outline bg-surface px-3.5 py-2.5">
           <MoonPhaseIcon elongation={moon.elongation} />
-          <p className="text-[15px] leading-snug">
-            <b>{moon.phase}</b> · Moon in {moon.signName}
-            {day.hour < 12 && reading.moonSign !== moon.signName && `, moving into ${reading.moonSign} today`}
-          </p>
+          <div className="flex flex-col text-[15px] leading-snug">
+            <p>
+              <b>{moon.phase}</b> · Moon in {moon.signName}
+              {prefs.system === "vedic" && ` · ${moon.nakshatra}`}
+            </p>
+            {change && (
+              <p className="text-muted">
+                Moves into {change.signName} at {fmtTime(change.at.toISOString(), tz)}
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="mt-2 flex flex-col gap-2.5">

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { computeNatalChart, localToUtc } from "@/lib/engine";
-import { bigThree, moonNow, phaseName, seedOf } from "@/lib/sky";
+import { bigThree, moonNow, moonSignChange, phaseName, seedOf } from "@/lib/sky";
 import type { Profile } from "@/lib/store";
 import { todayReading } from "@/lib/today";
 
@@ -59,6 +59,23 @@ describe("sky helpers", () => {
     expect(m.phase).toBe("Full moon");
     expect(m.signName).toBe("Aries");
     expect(moonNow(new Date("2025-11-05T13:19:00Z"), "western").signName).toBe("Taurus");
+  });
+
+  it("finds when the Moon changes sign during a day, in each zodiac", () => {
+    // 1 Nov 2026 IST: the sidereal Moon enters Cancer a minute after midnight; the tropical Moon enters Leo later in the day.
+    const from = localToUtc("2026-11-01", "00:00", "Asia/Kolkata");
+    const to = localToUtc("2026-11-02", "00:00", "Asia/Kolkata");
+    const w = moonSignChange(from, to, "western")!;
+    expect(w.signName).toBe("Leo");
+    expect(w.at > from && w.at < to).toBe(true);
+    expect(moonNow(new Date(w.at.getTime() - 120_000), "western").signName).toBe("Cancer");
+    expect(moonNow(new Date(w.at.getTime() + 120_000), "western").signName).toBe("Leo");
+    const v = moonSignChange(from, to, "vedic")!;
+    expect(v.signName).toBe("Cancer");
+    expect(v.at.getTime() - from.getTime()).toBeLessThan(5 * 60_000);
+    expect(w.at > v.at).toBe(true);
+    expect(moonNow(new Date("2026-11-01T06:30:00Z"), "vedic").nakshatra).toBe("Pushya");
+    expect(moonSignChange(new Date("2026-11-01T06:30:00Z"), new Date("2026-11-01T07:30:00Z"), "vedic")).toBeNull();
   });
 
   it("seeds are stable", () => {
