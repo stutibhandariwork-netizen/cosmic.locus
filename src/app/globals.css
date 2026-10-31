@@ -175,6 +175,15 @@ body {
   }
 }
 
+/* Zodiac and planet symbols: a symbol font, and plain text rather than colour emoji. */
+.glyph {
+  font-family: "Apple Symbols", "Segoe UI Symbol", "Noto Sans Symbols 2", "Noto Sans Symbols", "DejaVu Sans", sans-serif;
+  font-variant-emoji: text;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 /* Patterns: decoration zones only, never behind text. */
 .pattern-checker {
   background: repeating-conic-gradient(var(--cocoa) 0 25%, var(--peach) 0 50%) 0 0 / 16px 16px;
@@ -218,6 +227,29 @@ body {
 }
 .twinkle-3 {
   animation-delay: 2.2s;
+}
+
+/* The onboarding reveal: the chart wheel draws itself. Only when motion is welcome, so nothing stays hidden. */
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes draw-fade {
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wheel-draw .draw-line {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-line 1.1s ease-out forwards;
+  }
+  .wheel-draw .draw-fade {
+    opacity: 0;
+    animation: draw-fade 0.6s ease-out forwards;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

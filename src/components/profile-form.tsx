@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { searchPlaces, type Place } from "@/lib/places";
-import { FORM_ERRORS } from "@/lib/content/onboarding";
+import { fullPlacesReady, preloadPlaces, quickSearchPlaces, searchPlaces, type Place } from "@/lib/places";
+import { DETAILS, FORM_ERRORS } from "@/lib/content/onboarding";
 import { update, type Profile } from "@/lib/store";
 
 /** Birth details form. Saves to this device only, or hands the details to `onSubmit` (onboarding). */
@@ -75,10 +75,18 @@ export function ProfileForm({
         </div>
       </div>
       {(error?.field === "date" || error?.field === "time") && <FieldError message={error.message} />}
-      <label htmlFor="unknown" className="flex min-h-11 items-center gap-2.5 text-[15px] leading-snug">
-        <input id="unknown" type="checkbox" className="size-[22px] shrink-0 accent-[var(--rust)]" checked={timeUnknown} onChange={(e) => setTimeUnknown(e.target.checked)} />
-        <span>I&apos;m not sure of my time. A rough guess helps, and you can update it later.</span>
-      </label>
+      {!timeUnknown && <p className="-mt-2 text-[13px] text-muted">{DETAILS.timeWhy}</p>}
+      <div className="flex flex-col gap-1">
+        <label htmlFor="unknown" className="flex min-h-11 items-center gap-2.5 text-[15px] leading-snug">
+          <input id="unknown" type="checkbox" className="size-[22px] shrink-0 accent-[var(--rust)]" checked={timeUnknown} onChange={(e) => setTimeUnknown(e.target.checked)} />
+          <span>{DETAILS.timeUnknownLabel}</span>
+        </label>
+        {timeUnknown && (
+          <p className="rounded-[12px] bg-surface-2 px-3 py-2 text-[15px]" role="status">
+            {DETAILS.timeUnknownNote}
+          </p>
+        )}
+      </div>
       <PlacePicker value={place} onChange={setPlace} invalid={error?.field === "place"} />
       {error?.field === "place" && <FieldError message={error.message} />}
       <button className={`btn btn-wide ${pinned ? "mt-auto" : "mt-2"}`}>{submitLabel}</button>
@@ -106,6 +114,10 @@ function PlacePicker({ value, onChange, invalid = false }: { value: Profile["pla
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
+    preloadPlaces();
+  }, []);
+
+  useEffect(() => {
     if (value && query === value.label) return;
     clearTimeout(timer.current);
     if (query.trim().length < 2) {
@@ -115,17 +127,22 @@ function PlacePicker({ value, onChange, invalid = false }: { value: Profile["pla
     let cancelled = false;
     timer.current = setTimeout(async () => {
       setLoading(true);
+      const show = (found: Place[]) => {
+        if (cancelled) return;
+        setOptions(found);
+        setActive((a) => Math.min(a, Math.max(found.length - 1, 0)));
+        setOpen(true);
+      };
       try {
-        const found = await searchPlaces(query);
-        if (!cancelled) {
-          setOptions(found);
-          setActive(0);
-          setOpen(true);
-        }
+        // Big places answer straight away; the full list (smaller towns) follows when it arrives.
+        if (!fullPlacesReady()) show(await quickSearchPlaces(query));
+        show(await searchPlaces(query));
+      } catch {
+        if (!cancelled) setOptions([]);
       } finally {
         if (!cancelled) setLoading(false);
       }
-    }, 150);
+    }, 120);
     return () => {
       cancelled = true;
       clearTimeout(timer.current);

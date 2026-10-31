@@ -1,6 +1,6 @@
 "use client";
 
-import { SIGN_GLYPH } from "@/lib/content/glyphs";
+import { Glyph } from "@/components/glyph";
 import Link from "next/link";
 import { useMemo } from "react";
 import { WithChart } from "@/components/gate";
@@ -47,7 +47,11 @@ function Day({ profile, chart, prefs }: { profile: Profile; chart: NatalChart; p
         <p className="text-[15px] text-muted">{dateLabel}</p>
       </header>
 
-      <ReadingCard eyebrow={`Read from your ${r.base.body} in ${r.base.signName} ${SIGN_GLYPH[r.base.sign]}`} headline={r.headline}>
+      <ReadingCard eyebrow={
+          <>
+            Read from your {r.base.body} in {r.base.signName} <Glyph sign={r.base.sign} />
+          </>
+        } headline={r.headline}>
         <p>{r.body}</p>
         <p className="text-[15px] text-muted">
           Why: today the Moon is in {r.moonSign}, the {ordinal(r.house)} sign counted from your {r.base.signName} {r.base.body}. That part of your chart is

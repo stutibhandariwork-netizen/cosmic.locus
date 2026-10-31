@@ -1,16 +1,16 @@
 "use client";
 
-import { SIGN_GLYPH } from "@/lib/content/glyphs";
+import { Glyph } from "@/components/glyph";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { MoonPhaseIcon, Sparkle, Star8, SunFace } from "@/components/art";
 import { Loading } from "@/components/gate";
-import { ProfileForm } from "@/components/profile-form";
-import { AreaTile, ReadingCard, StarProgress } from "@/components/ui";
+import { Onboarding } from "@/components/onboarding";
+import { AreaTile, ReadingCard } from "@/components/ui";
 import { chartFor, deviceTimeZone, localDay, useChart } from "@/lib/chart";
 import { fmtTime } from "@/lib/format";
-import { bigThree, moonNow, moonSignChange } from "@/lib/sky";
-import { update, useData, type Prefs, type Profile } from "@/lib/store";
+import { moonNow, moonSignChange } from "@/lib/sky";
+import { useData, type Prefs, type Profile } from "@/lib/store";
 import { greetingFor, todayReading } from "@/lib/today";
 
 export default function Home() {
@@ -72,7 +72,11 @@ function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<
 
       <div className="flex flex-col gap-3.5 px-4 pt-1.5">
         <ReadingCard
-          eyebrow={`Read from your ${reading.base.body} in ${reading.base.signName} ${SIGN_GLYPH[reading.base.sign]}`}
+          eyebrow={
+            <>
+              Read from your {reading.base.body} in {reading.base.signName} <Glyph sign={reading.base.sign} />
+            </>
+          }
           headline={reading.headline}
           action={
             <Link href="/day/" className="btn">
@@ -104,97 +108,6 @@ function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<
           </div>
         </div>
 
-      </div>
-    </div>
-  );
-}
-
-function Onboarding() {
-  const [details, setDetails] = useState<Profile | null>(null);
-  const [step, setStep] = useState<1 | 2>(1);
-  const draft = step === 2 ? details : null;
-  const [system, setSystem] = useState<Prefs["system"]>("vedic");
-  const preview = useMemo(() => {
-    if (!draft) return null;
-    const { chart } = chartFor(draft);
-    return { vedic: bigThree(chart, "vedic"), western: bigThree(chart, "western") };
-  }, [draft]);
-
-  return (
-    <div className="-mx-4 -mt-6 -mb-8 flex min-h-dvh flex-col bg-periwinkle">
-      <div className="relative h-[196px] shrink-0 overflow-hidden">
-        <Star8 size={22} fill="var(--cream)" className="twinkle absolute" style={{ left: 36, top: 40 }} />
-        <Sparkle size={16} fill="var(--cream)" className="twinkle twinkle-2 absolute" style={{ right: 44, top: 64 }} />
-        <Sparkle size={12} fill="var(--butter)" className="twinkle twinkle-3 absolute" style={{ right: 90, top: 28 }} />
-        <div className="sun-wake absolute left-1/2 -ml-[100px]" style={{ bottom: -110 }}>
-          <SunFace size={200} mood="rising" face="var(--peach)" rays="var(--butter)" label="A smiling sun rising" />
-        </div>
-      </div>
-
-      <div className="relative -mt-0.5 flex flex-1 flex-col gap-3.5 rounded-t-[32px] border-t-2 border-cocoa bg-cream px-5 pt-6 pb-6">
-        <StarProgress step={draft ? 2 : 1} of={2} />
-        {!draft ? (
-          <>
-            <div className="flex flex-col gap-1">
-              <h1 className="title">Hello, starlight.</h1>
-              <p>Let&apos;s find your place in the sky.</p>
-            </div>
-            <ProfileForm
-              initial={details}
-              submitLabel="Next"
-              onSubmit={(p) => {
-                setDetails(p);
-                setStep(2);
-              }}
-              pinned
-            />
-          </>
-        ) : (
-          <>
-            <div className="flex flex-col gap-1">
-              <h1 className="title">Which sky is yours?</h1>
-              <p>Two ways of reading the same stars. You can switch any time.</p>
-            </div>
-            <fieldset className="flex flex-col gap-3">
-              <legend className="sr-only">Chart style</legend>
-              {(
-                [
-                  ["vedic", "Vedic", "Measured against the stars (sidereal, Lahiri), as Indian astrologers read it. Your day is read from your Moon sign."],
-                  ["western", "Western", "The tropical zodiac most magazines use. Your day is read from your Sun sign."],
-                ] as const
-              ).map(([id, title, text]) => {
-                const signs = preview![id];
-                return (
-                  <label
-                    key={id}
-                    className={`flex cursor-pointer gap-3 rounded-3xl border-2 border-cocoa p-4 ${system === id ? "bg-butter" : "bg-white"}`}
-                  >
-                    <input type="radio" name="system" value={id} checked={system === id} onChange={() => setSystem(id)} className="mt-1 size-[22px] shrink-0 accent-[var(--rust)]" />
-                    <span className="flex flex-col gap-1">
-                      <span className="font-display text-[22px] leading-tight font-semibold">{title}</span>
-                      <span className="text-[15px] leading-snug">{text}</span>
-                      <span className="text-[15px] font-bold">
-                        Sun {signs.sun.signName} · Moon {signs.moon.signName}
-                        {signs.rising ? ` · Rising ${signs.rising.signName}` : ""}
-                      </span>
-                    </span>
-                  </label>
-                );
-              })}
-            </fieldset>
-            <div className="mt-auto flex flex-col gap-2 pt-2">
-              <button
-                className="btn btn-wide"
-                onClick={() => update((d) => ({ ...d, profile: draft, prefs: { ...d.prefs, system } }))}
-              >
-                Show me my sky
-              </button>
-              <button className="btn-ghost w-full border-0 bg-transparent" onClick={() => setStep(1)}>
-                Back to my details
-              </button>
-            </div>
-          </>
-        )}
       </div>
     </div>
   );

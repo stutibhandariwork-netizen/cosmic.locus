@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Star8 } from "./art";
 
-export function ReadingCard({ eyebrow, headline, children, action, className = "" }: { eyebrow: string; headline: React.ReactNode; children?: React.ReactNode; action?: React.ReactNode; className?: string }) {
+export function ReadingCard({ eyebrow, headline, children, action, className = "" }: { eyebrow: React.ReactNode; headline: React.ReactNode; children?: React.ReactNode; action?: React.ReactNode; className?: string }) {
   return (
     <section className={`card ${className}`}>
       <p className="eyebrow">{eyebrow}</p>

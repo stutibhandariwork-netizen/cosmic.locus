@@ -77,8 +77,8 @@ function Locus({ profile, chart, timeNote, system }: { profile: Profile; chart: 
           <li className="flex items-center gap-3 rounded-[18px] bg-surface px-3.5 py-3">
             <span className="size-3.5 shrink-0 rounded-full border-2 border-periwinkle" aria-hidden />
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <p className="font-bold">Rising · needs your birth time</p>
-              <p className="text-[15px] leading-snug text-muted">Your rising sign changes every two hours or so. Even a rough time helps.</p>
+              <p className="font-bold">Add your birth time to unlock your rising sign</p>
+              <p className="text-[15px] leading-snug text-muted">It changes every two hours or so and sets which life areas each planet touches. Even a rough time helps.</p>
             </div>
             <Link href="/settings/" className="flex min-h-11 items-center text-[15px] font-bold text-label">
               Add time
