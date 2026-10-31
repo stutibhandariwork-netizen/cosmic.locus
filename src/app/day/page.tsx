@@ -52,8 +52,7 @@ function Day({ profile, chart, prefs }: { profile: Profile; chart: NatalChart; p
         } headline={r.headline}>
         <p>{r.body}</p>
         <p className="text-[15px] text-muted">
-          Why: today the Moon is in {r.moonSign}, the {ordinal(r.house)} sign counted from your {r.base.signName} {r.base.body}. That part of your chart is
-          about {r.zone}.
+          Why: {r.sky}. It&apos;s the {ordinal(r.house)} sign counted from your {r.base.body} in {r.base.signName}, the part of your chart about {r.zone}.
         </p>
       </ReadingCard>
 

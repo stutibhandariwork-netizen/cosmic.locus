@@ -29,7 +29,7 @@ export function moonNow(at: Date, system: ZodiacSystem) {
   const lon = moonLongitude(at, system);
   const elongation = MoonPhase(at);
   const nak = nakshatraOf(siderealLongitude("Moon", at));
-  return { sign: signOf(lon), signName: SIGNS[signOf(lon)].en, nakshatra: nak.name, elongation, phase: phaseName(elongation) };
+  return { sign: signOf(lon), signName: SIGNS[signOf(lon)].en, nakshatra: nak.name, nakshatraIndex: nak.index, elongation, phase: phaseName(elongation) };
 }
 
 /** When the Moon next changes sign between `from` and `to` (it moves about 13° a day, so at most once). */

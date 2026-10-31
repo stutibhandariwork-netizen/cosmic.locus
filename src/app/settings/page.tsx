@@ -58,6 +58,15 @@ export default function SettingsPage() {
               <span className="text-[15px] text-muted">A calmer Today screen with a smaller sun and no sparkles.</span>
             </span>
           </label>
+          <label className="flex min-h-11 items-start gap-3 border-t border-line pt-4">
+            <input type="checkbox" className="mt-0.5 size-[22px] shrink-0 accent-[var(--rust)]" checked={data.prefs.astrologer} onChange={(e) => setPrefs({ astrologer: e.target.checked })} />
+            <span className="flex flex-col">
+              <span className="font-bold">Astrologer mode</span>
+              <span className="text-[15px] text-muted">
+                Show exact degrees, nakshatra padas and every yoga checked, including the ones not in your chart. Plain readings stay alongside.
+              </span>
+            </span>
+          </label>
         </div>
       </section>
 

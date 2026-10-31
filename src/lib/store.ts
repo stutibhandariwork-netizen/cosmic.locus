@@ -41,6 +41,8 @@ export interface Prefs {
   system: "vedic" | "western";
   /** "Comfort reading": a calmer Today screen with less decoration. */
   comfort: boolean;
+  /** Astrologer mode: degrees, padas, house numbers and every yoga checked, shown up front. */
+  astrologer: boolean;
 }
 
 /** The Google Doc the journal is copied to, if the visitor connected Google Docs. */
@@ -65,7 +67,7 @@ export interface Data {
 }
 
 const KEY = "grahify-demo-v1";
-export const DEFAULT_PREFS: Prefs = { system: "vedic", comfort: false };
+export const DEFAULT_PREFS: Prefs = { system: "vedic", comfort: false, astrologer: false };
 const EMPTY: Data = { profile: null, prefs: DEFAULT_PREFS, google: null, seenWelcome: false, ritual: { date: "", done: [] }, tarot: [], journal: [] };
 
 let cache: Data | null = null;

@@ -1,4 +1,5 @@
 import { DAILY } from "./content/daily";
+import { LIFE_AREAS } from "./content/plain";
 import { houseFrom, type NatalChart } from "./engine";
 import { bigThree, moonNow, seedOf, type ZodiacSystem } from "./sky";
 import type { Profile } from "./store";
@@ -21,6 +22,9 @@ export function todayReading(profile: Profile, chart: NatalChart, system: Zodiac
     base, // the sign the reading is counted from
     house,
     moonSign: moon.signName,
+    moonSignIndex: moon.sign,
+    /** What the sky is doing, in plain words: the cause that makes the reading astrology. */
+    sky: `The Moon is in ${moon.signName}, your ${LIFE_AREAS[house].zone} today`,
     zone: read.zone,
     ...read.readings[seed % read.readings.length],
     love: read.love,

@@ -17,7 +17,7 @@ describe("stored data", () => {
     const d = snapshot();
     expect(d.profile?.name).toBe("Asha");
     expect(d.journal).toHaveLength(1);
-    expect(d.prefs).toEqual({ system: "vedic", comfort: false });
+    expect(d.prefs).toEqual({ system: "vedic", comfort: false, astrologer: false });
     expect(d.seenWelcome).toBe(false);
     expect(d.ritual).toEqual({ date: "", done: [] });
     expect(d.google).toBeNull();

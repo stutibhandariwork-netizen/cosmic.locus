@@ -7,6 +7,7 @@ import { WithChart } from "@/components/gate";
 import { weekStart, weeklyFacts, type PlanetWeek, type SignStay } from "@/lib/astrology/weekly";
 import { deviceTimeZone } from "@/lib/chart";
 import { utcOffsetMinutes, type NatalChart, type TransitEvent } from "@/lib/engine";
+import { LIFE_AREAS } from "@/lib/content/plain";
 import { fmtLocal, ordinal } from "@/lib/format";
 
 const EVENT: Record<TransitEvent["type"], (e: TransitEvent) => string> = {
@@ -31,7 +32,7 @@ function Week({ chart }: { chart: NatalChart }) {
   const hasLagna = facts.reference.lagnaSign !== null;
   const nowIso = new Date().toISOString();
   const houses = (s: Pick<SignStay, "houseFromMoon" | "houseFromLagna">) =>
-    `${ordinal(s.houseFromMoon)} from Moon${hasLagna && s.houseFromLagna ? ` · ${ordinal(s.houseFromLagna)} from lagna` : ""}`;
+    `your ${LIFE_AREAS[s.houseFromMoon].short} zone (${ordinal(s.houseFromMoon)} from Moon${hasLagna && s.houseFromLagna ? ` · ${ordinal(s.houseFromLagna)} from lagna` : ""})`;
 
   return (
     <div className="flex flex-col gap-8">
@@ -164,7 +165,7 @@ function PlanetCard({ p, tz, houses, future }: { p: PlanetWeek; tz: string; hous
           <div className="grid grid-cols-[4.5rem_1fr] gap-2">
             <dt className="text-[13px] font-semibold text-muted uppercase">Next</dt>
             <dd>
-              {p.next.signName} on {fmtLocal(p.next.date, tz)} <span className="text-[13px] text-muted">({houses(p.next)})</span>
+              {p.next.signName} on {fmtLocal(p.next.date, tz)} <span className="text-[13px] text-muted">· {houses(p.next)}</span>
             </dd>
           </div>
         )}

@@ -14,7 +14,8 @@ import { dailyFacts } from "@/lib/astrology/daily";
 import type { NatalChart } from "@/lib/engine";
 import { journalPrompt } from "@/lib/journal/core";
 import { deviceTimeZone, localDay, useChart } from "@/lib/chart";
-import { fmtTime } from "@/lib/format";
+import { NAKSHATRA_MOOD } from "@/lib/content/plain";
+import { fmtTime, ordinal } from "@/lib/format";
 import { moonNow, moonSignChange } from "@/lib/sky";
 import { markRitual, useData, type Data, type Prefs, type Profile } from "@/lib/store";
 import { greetingFor, todayReading } from "@/lib/today";
@@ -137,7 +138,13 @@ function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; 
               </Link>
             }
           >
+            <p className="font-bold">
+              <Glyph planet="Moon" /> {reading.sky}.
+            </p>
             <p>{reading.body}</p>
+            <p className="text-[13px] text-muted">
+              Moon in {reading.moonSign} <Glyph sign={reading.moonSignIndex} /> · {ordinal(reading.house)} house from your {reading.base.body} ({reading.base.signName})
+            </p>
           </ReadingCard>
         </div>
 
@@ -152,7 +159,7 @@ function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; 
           <div className="flex flex-col text-[15px] leading-snug">
             <p>
               <b>{moon.phase}</b> · Moon in {moon.signName} <Glyph sign={moon.sign} />
-              {prefs.system === "vedic" && ` · ${moon.nakshatra}`}
+              {prefs.system === "vedic" && ` · ${moon.nakshatra}, ${NAKSHATRA_MOOD[moon.nakshatraIndex]}`}
             </p>
             {change && (
               <p className="text-muted">
