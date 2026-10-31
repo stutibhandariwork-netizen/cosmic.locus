@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { MoonPhaseIcon, Star8 } from "@/components/art";
 import { OrbitDivider, TodaySky } from "@/components/sky-art";
 import { Loading } from "@/components/gate";
+import { InstallHint } from "@/components/install-hint";
 import { Onboarding } from "@/components/onboarding";
 import { CardOfTheDay, todaysCard } from "@/components/tarot/today-card";
 import { AreaTile, LinkRow, NextStep, ReadingCard, RitualHeading } from "@/components/ui";
@@ -101,6 +102,7 @@ function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; 
       <OrbitDivider className="mt-1" />
 
       <div className="flex flex-col gap-3.5 px-4 pt-1.5">
+        <InstallHint data={data} />
         <section className="flex items-center justify-between gap-3 px-1" aria-label="Today's ritual">
           <p className="font-display text-lg font-semibold">Your ritual today</p>
           <p className="flex items-center gap-1" role="img" aria-label={`${count} of 4 done`}>

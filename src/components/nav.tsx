@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/sky-art";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { startInstallWatch } from "@/lib/install";
 import { useData } from "@/lib/store";
 
 const ICONS = {
@@ -43,6 +45,9 @@ const ITEMS = [
 export function BottomNav() {
   const pathname = usePathname();
   const data = useData();
+
+  // Count visits and catch the install prompt (for the "add to home screen" card).
+  useEffect(startInstallWatch, []);
   // Onboarding is a full-screen sheet with no tab bar.
   if (pathname === "/" && !data?.profile) return null;
 

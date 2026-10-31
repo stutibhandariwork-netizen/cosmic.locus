@@ -6,6 +6,7 @@ import { useState } from "react";
 import { LogoMark } from "@/components/sky-art";
 import { Loading } from "@/components/gate";
 import { ProfileForm } from "@/components/profile-form";
+import { RestoreBackup } from "@/components/restore-backup";
 import { PageHeader, Segmented } from "@/components/ui";
 import { clearAll, setPrefs, useData } from "@/lib/store";
 
@@ -107,6 +108,7 @@ export default function SettingsPage() {
           <button className="btn-ghost self-start" onClick={download}>
             Download my data
           </button>
+          <RestoreBackup />
         </div>
       </section>
 

@@ -62,13 +62,16 @@ export interface Data {
   seenWelcome: boolean;
   /** Today's ritual steps that are done, for one local date. */
   ritual: { date: string; done: RitualStep[] };
+  /** Visits (one per browser session), for the "add to home screen" hint from the second visit. */
+  visits: number;
+  installHintDismissed: boolean;
   tarot: TarotSession[];
   journal: JournalEntry[];
 }
 
 const KEY = "grahify-demo-v1";
 export const DEFAULT_PREFS: Prefs = { system: "vedic", comfort: false, astrologer: false };
-const EMPTY: Data = { profile: null, prefs: DEFAULT_PREFS, google: null, seenWelcome: false, ritual: { date: "", done: [] }, tarot: [], journal: [] };
+const EMPTY: Data = { profile: null, prefs: DEFAULT_PREFS, google: null, seenWelcome: false, ritual: { date: "", done: [] }, visits: 0, installHintDismissed: false, tarot: [], journal: [] };
 
 let cache: Data | null = null;
 const listeners = new Set<() => void>();
@@ -127,6 +130,9 @@ export function useData(): Data | null {
 
 /** The current data, outside React (e.g. right after an update). */
 export const snapshot = () => read();
+
+/** Replaces everything on this device (used by "Restore from a backup"). */
+export const replaceAll = (d: Data) => update(() => ({ ...EMPTY, ...d, prefs: { ...DEFAULT_PREFS, ...d.prefs } }));
 
 /** Marks a ritual step done for a local date (starting fresh on a new day). */
 export const markRitual = (date: string, step: RitualStep) =>

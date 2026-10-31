@@ -6,11 +6,12 @@
 
 Everything runs in the visitor's browser: the chart is calculated on the device, and birth details, tarot spreads and journal notes are kept in that browser's local storage. There are no accounts and no server.
 
-- **Today:** a daily reading counted from where today's Moon sits relative to your Moon sign (Vedic) or Sun sign (Western), with love, work and self-care notes, the Moon's phase, and a "Read deeper" page. The same reading all day; a new one tomorrow.
-- **Your Locus:** a zodiac wheel and your big three (Sun, Moon, rising), in Vedic (sidereal, Lahiri) or Western (tropical). Vedic mode adds the North Indian chart (D1 and D9), planet placements, yogas, Vimshottari dasha and Saturn cycles. Calculated with [astronomy-engine](https://github.com/cosinekitty/astronomy).
+- **Onboarding:** an intro, birth details (with why the time matters), Vedic or Western, then the chart wheel drawing itself, and a one-time "Your sky is ready" guide.
+- **Today:** today's real sky (Sun, Moon phase, your constellation) and a four-step ritual: read your day, pull today's card, your affirmation, write one line. The reading opens with what the Moon is doing in your chart, rotates daily so it never repeats on consecutive days, and adds a line from Venus, Mars or your life chapter.
+- **Your Locus:** your story in three lines, the zodiac wheel and your big three, in Vedic (sidereal, Lahiri) or Western (tropical). Life chapters (Vimshottari dasha), Saturn cycles, yogas and planets lead with plain words and keep the real terms alongside; Astrologer mode adds degrees, padas and every yoga checked. Calculated with [astronomy-engine](https://github.com/cosinekitty/astronomy).
 - **Tarot:** card of the day, three cards (past, present, future) and yes / no, plus deeper spreads where you pick your own cards. Every card is pulled from a face-down deck shuffled with the Web Crypto API, and shows the 1909 Rider-Waite-Smith artwork (public domain).
-- **Journal:** notes, daily prompts and saved tarot pulls.
-- Also: this week's transits, numerology, and a "Comfort reading" setting for a calmer Today screen.
+- **Journal:** notes, daily prompts and saved tarot pulls, with optional one-way sync to a Google Doc (needs a Google client ID at build time).
+- Also: this week's transits, numerology, a "Comfort reading" setting, download and restore a backup, and a home-screen reminder from the second visit.
 
 Installable as an app from the browser (web app manifest and icons in `public/`).
 
