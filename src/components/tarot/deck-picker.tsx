@@ -43,7 +43,7 @@ export function DeckPicker({ session, used, prompt, clarifyPick, onDone }: { ses
                 <span className={`block transition-transform duration-200 ${isSel ? "-translate-y-5" : "group-hover:-translate-y-2"}`}>
                   <CardBack className={`w-14 ${isSel ? "drop-shadow-[0_0_10px_rgba(229,180,94,.7)]" : "drop-shadow"}`} />
                 </span>
-                <span className={`mt-1 block text-center text-[10px] tabular-nums ${isSel ? "font-bold text-accent" : "text-muted"}`}>{p}</span>
+                <span className={`mt-1 block text-center text-[13px] tabular-nums ${isSel ? "font-bold text-accent" : "text-muted"}`}>{p}</span>
               </button>
             );
           })}
@@ -54,7 +54,7 @@ export function DeckPicker({ session, used, prompt, clarifyPick, onDone }: { ses
           {selected ? `Draw card ${selected}` : "Tap a card in the fan"}
         </button>
         <form
-          className="flex items-center gap-2 text-sm"
+          className="flex items-center gap-2 text-[15px]"
           onSubmit={(e) => {
             e.preventDefault();
             if (typed) draw(Number(typed));
@@ -77,7 +77,7 @@ export function DeckPicker({ session, used, prompt, clarifyPick, onDone }: { ses
           </button>
         </form>
         {error && (
-          <p className="text-sm text-warn" role="alert">
+          <p className="text-[15px] text-warn" role="alert">
             {error}
           </p>
         )}

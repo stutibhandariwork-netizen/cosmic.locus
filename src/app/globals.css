@@ -1,113 +1,227 @@
 @import "tailwindcss";
 
-/* Grahify: warm parchment by day, deep indigo night sky after dark. Saffron-gold accents. */
+/*
+ * Cosmic Locus design tokens (from the design handoff's tokens.css).
+ * Light = "Peach Sunrise", dark = "Midnight Zodiac" (Your Locus).
+ * Pastels are backgrounds only; reading text is always --text (cocoa, or cream in dark).
+ */
 :root {
-  --bg: #fbf6ee;
-  --surface: #ffffff;
-  --surface-2: #f4ecdf;
-  --ink: #2a2135;
-  --muted: #6e6377;
-  --line: #e6dac8;
-  --primary: #4a3a7a;
-  --primary-ink: #ffffff;
-  --accent: #b97a1f;
-  --accent-soft: #f6e6c8;
-  --good: #3f7d58;
-  --warn: #a8571f;
-  --warn-soft: #fbe9da;
+  --cream: #fff6ec;
+  --peach: #f9c6a8;
+  --blush: #f6c9d0;
+  --lilac: #cdb8e6;
+  --periwinkle: #9fb2e8;
+  --periwinkle-mist: #e4e9fa;
+  --butter: #f7e3a1;
+  --ochre: #d9a441;
+  --cheek: #f2a69a;
+  --rust: #a3451f;
+  --olive: #5c6330;
+  --cocoa: #3b2418;
+  --plum: #4a2e5c;
+  --white: #ffffff;
+  --night-ink: #1e1530;
+  --night-card: #2a2040;
+  --night-line: #5a4a80;
+
+  --bg: var(--cream);
+  --surface: var(--white);
+  --surface-2: #fdebdc;
+  --text: var(--cocoa);
+  --text-muted: #5e4335;
+  --label: var(--rust);
+  --outline: var(--cocoa);
+  --line: color-mix(in srgb, var(--cocoa) 22%, transparent);
+  --btn-bg: var(--cocoa);
+  --btn-text: var(--cream);
+  --tab-active: var(--rust);
+  --tab-line: var(--cocoa);
+  --focus: var(--rust);
+  --accent-soft: var(--butter);
+  --good: var(--olive);
+  --warn: var(--rust);
+  --warn-soft: #fbe2d6;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14111f;
-    --surface: #1c1830;
-    --surface-2: #241f3b;
-    --ink: #f1eadf;
-    --muted: #a9a0b8;
-    --line: #322b4d;
-    --primary: #b9a6f2;
-    --primary-ink: #17132a;
-    --accent: #e5b45e;
-    --accent-soft: #3a2f22;
-    --good: #8cc9a2;
-    --warn: #f0a46c;
-    --warn-soft: #3b261b;
-  }
+[data-theme="dark"] {
+  --bg: var(--night-ink);
+  --surface: var(--night-card);
+  --surface-2: #352a52;
+  --text: var(--cream);
+  --text-muted: var(--lilac);
+  --label: var(--blush);
+  --outline: var(--lilac);
+  --line: var(--night-line);
+  --btn-bg: var(--blush);
+  --btn-text: var(--night-ink);
+  --tab-active: var(--blush);
+  --tab-line: var(--night-line);
+  --focus: var(--blush);
+  --accent-soft: #3a2f58;
+  --good: #c8d49a;
+  --warn: var(--blush);
+  --warn-soft: #3b2440;
+  color-scheme: dark;
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
-  --color-ink: var(--ink);
-  --color-muted: var(--muted);
+  --color-ink: var(--text);
+  --color-muted: var(--text-muted);
   --color-line: var(--line);
-  --color-primary: var(--primary);
-  --color-primary-ink: var(--primary-ink);
-  --color-accent: var(--accent);
+  --color-outline: var(--outline);
+  --color-label: var(--label);
+  --color-primary: var(--btn-bg);
+  --color-primary-ink: var(--btn-text);
+  --color-accent: var(--label);
   --color-accent-soft: var(--accent-soft);
   --color-good: var(--good);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
+  --color-cream: var(--cream);
+  --color-peach: var(--peach);
+  --color-blush: var(--blush);
+  --color-lilac: var(--lilac);
+  --color-periwinkle: var(--periwinkle);
+  --color-butter: var(--butter);
+  --color-ochre: var(--ochre);
+  --color-rust: var(--rust);
+  --color-cocoa: var(--cocoa);
+  --color-night: var(--night-ink);
+  --color-night-card: var(--night-card);
+  --color-night-line: var(--night-line);
   --font-sans: var(--font-body), system-ui, sans-serif;
   --font-display: var(--font-display), Georgia, serif;
 }
 
+html {
+  background: var(--bg);
+}
+
 body {
   background: var(--bg);
-  color: var(--ink);
+  color: var(--text);
   font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-/* A faint starfield behind everything, visible mainly in dark mode. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    radial-gradient(1px 1px at 12% 18%, color-mix(in srgb, var(--accent) 45%, transparent) 50%, transparent 51%),
-    radial-gradient(1px 1px at 72% 9%, color-mix(in srgb, var(--accent) 35%, transparent) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 88% 42%, color-mix(in srgb, var(--primary) 35%, transparent) 50%, transparent 51%),
-    radial-gradient(1px 1px at 33% 64%, color-mix(in srgb, var(--accent) 30%, transparent) 50%, transparent 51%),
-    radial-gradient(1px 1px at 58% 86%, color-mix(in srgb, var(--primary) 30%, transparent) 50%, transparent 51%);
-  opacity: 0.6;
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 @layer components {
+  /* ReadingCard */
   .card {
-    @apply rounded-2xl border border-line bg-surface p-5;
-  }
-  .btn {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-ink transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-50;
-  }
-  .btn-ghost {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line px-5 text-sm font-medium text-ink transition hover:bg-surface-2;
-  }
-  .field {
-    @apply block w-full rounded-xl border border-line bg-surface px-4 py-3 text-base text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25;
-  }
-  .label {
-    @apply mb-1.5 block text-sm font-medium text-ink;
-  }
-  .hint {
-    @apply mt-1.5 text-xs text-muted;
-  }
-  .chip {
-    @apply inline-flex items-center rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs font-medium text-muted;
+    @apply flex flex-col gap-2.5 rounded-3xl border-2 border-outline bg-surface p-5;
   }
   .eyebrow {
-    @apply text-xs font-semibold tracking-[0.14em] text-accent uppercase;
+    @apply text-[13px] font-bold tracking-[0.14em] text-label uppercase;
+  }
+  .headline {
+    @apply font-display text-[28px] leading-[1.1] font-semibold;
+  }
+  .title {
+    @apply font-display text-[32px] leading-[1.1] font-semibold;
+  }
+  .h2 {
+    @apply font-display text-[22px] leading-tight font-semibold;
+  }
+  /* PrimaryButton / SecondaryButton */
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-base font-bold text-primary-ink transition hover:opacity-90 disabled:opacity-50;
+  }
+  .btn-wide {
+    @apply min-h-[54px] w-full text-[17px];
+  }
+  .btn-ghost {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-outline bg-surface px-5 text-base font-bold text-ink transition hover:bg-surface-2;
+  }
+  /* TextField */
+  .field {
+    @apply block min-h-12 w-full rounded-[14px] border-2 border-outline bg-surface px-3.5 py-2 text-[17px] text-ink placeholder:text-muted disabled:opacity-50;
+  }
+  .label {
+    @apply mb-1.5 block text-[15px] font-bold text-ink;
+  }
+  .hint {
+    @apply mt-1.5 text-[13px] text-muted;
+  }
+  .chip {
+    @apply inline-flex items-center rounded-full border-2 border-outline bg-surface px-2.5 py-0.5 text-[13px] font-bold text-ink;
+  }
+  /* AreaTile */
+  .tile {
+    @apply flex min-h-24 flex-col gap-1 rounded-[18px] border-2 border-cocoa p-3 text-cocoa;
+  }
+  .link {
+    @apply font-bold text-label underline decoration-2 underline-offset-4;
   }
   .prose-grahify {
-    @apply flex flex-col gap-3 text-[15px] leading-relaxed;
+    @apply flex flex-col gap-3;
   }
   .prose-grahify strong {
-    @apply font-semibold text-ink;
+    @apply font-bold;
   }
   .prose-grahify ul {
     @apply list-disc space-y-1 pl-5;
+  }
+}
+
+/* Patterns: decoration zones only, never behind text. */
+.pattern-checker {
+  background: repeating-conic-gradient(var(--cocoa) 0 25%, var(--peach) 0 50%) 0 0 / 16px 16px;
+}
+.pattern-scallop-edge {
+  height: 14px;
+  background: radial-gradient(circle at 10px 0, var(--peach) 10px, transparent 10.5px) 0 0 / 20px 14px repeat-x;
+}
+
+/* Hero motion: the sun wakes up once, stars twinkle. */
+@keyframes sun-wake {
+  from {
+    transform: translateY(18px) scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+}
+.sun-wake {
+  animation: sun-wake 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.twinkle {
+  animation: twinkle 3.2s ease-in-out infinite;
+  transform-origin: center;
+}
+.twinkle-2 {
+  animation-delay: 1.1s;
+}
+.twinkle-3 {
+  animation-delay: 2.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
   }
 }

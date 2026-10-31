@@ -1,6 +1,6 @@
 /**
  * The 78-card Rider-Waite-Smith deck (Pamela Colman Smith, 1909; public domain).
- * Images live in public/tarot/<id>.jpg. Scene descriptions and meanings are our own words.
+ * Scene descriptions and meanings are our own words.
  *
  * Card index 0-21 = major arcana; 22-35 wands, 36-49 cups, 50-63 swords, 64-77 pentacles
  * (ace through ten, then page, knight, queen, king).
@@ -162,4 +162,3 @@ export const DECK: TarotCard[] = [
   ),
 ];
 
-export const cardImage = (card: TarotCard) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/tarot/${card.id}.jpg`;

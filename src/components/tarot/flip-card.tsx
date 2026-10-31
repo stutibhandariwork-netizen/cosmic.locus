@@ -1,14 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
-import { CardBack } from "./card-back";
+import type { TarotCard } from "@/lib/tarot/deck";
+import { CardBack, CardFace } from "./card-back";
 
 interface Props {
   /** Unique per reading and slot, used to flip each card only the first time it is seen. */
   seenKey: string;
-  image: string;
-  name: string;
+  card: TarotCard;
   reversed: boolean;
   size?: "md" | "sm";
 }
@@ -30,8 +29,8 @@ const seenStore = {
   },
 };
 
-/** A tarot card that turns over the first time it appears. Reversed cards show upside down. */
-export function FlipCard({ seenKey, image, name, reversed, size = "md" }: Props) {
+/** A tarot card that turns over the first time it appears. */
+export function FlipCard({ seenKey, card, reversed, size = "md" }: Props) {
   const [faceUp, setFaceUp] = useState(false);
   const [instant, setInstant] = useState(false);
 
@@ -48,23 +47,22 @@ export function FlipCard({ seenKey, image, name, reversed, size = "md" }: Props)
     return () => clearTimeout(t);
   }, [seenKey]);
 
-  const width = size === "md" ? "w-36 sm:w-44" : "w-20";
   return (
-    <div className={`${width} aspect-[100/172] [perspective:1200px]`}>
-      <div
-        className={`relative size-full [transform-style:preserve-3d] ${instant ? "" : "transition-transform duration-700 ease-out"} ${faceUp ? "[transform:rotateY(180deg)]" : ""}`}
-      >
-        <div className="absolute inset-0 [backface-visibility:hidden]">
-          <CardBack className="size-full drop-shadow-md" />
-        </div>
-        <div className="absolute inset-0 overflow-hidden rounded-[7%] shadow-md [backface-visibility:hidden] [transform:rotateY(180deg)]">
-          <Image
-            src={image}
-            alt={`${name}${reversed ? " (reversed)" : ""}`}
-            fill
-            sizes={size === "md" ? "(min-width: 640px) 176px, 144px" : "80px"}
-            className={`object-cover ${reversed ? "rotate-180" : ""}`}
-          />
+    <Flip faceUp={faceUp} instant={instant} className={size === "md" ? "w-40" : "w-24"} label={`${card.name}${reversed ? ", reversed" : ""}`}>
+      <CardBack className="size-full" />
+      <CardFace card={card} reversed={reversed} className="size-full" />
+    </Flip>
+  );
+}
+
+/** Two faces in a 3D flip. Children: [back, front]. */
+export function Flip({ faceUp, instant = false, className = "", label, children }: { faceUp: boolean; instant?: boolean; className?: string; label?: string; children: [React.ReactNode, React.ReactNode] }) {
+  return (
+    <div className={`aspect-[5/8] [perspective:1200px] ${className}`} role={label ? "img" : undefined} aria-label={faceUp ? label : undefined}>
+      <div className={`relative size-full [transform-style:preserve-3d] ${instant ? "" : "transition-transform duration-700 ease-out"} ${faceUp ? "[transform:rotateY(180deg)]" : ""}`}>
+        <div className="absolute inset-0 [backface-visibility:hidden]">{children[0]}</div>
+        <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]" aria-hidden={!faceUp}>
+          {children[1]}
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@ export function Section({ eyebrow, title, children }: { eyebrow: string; title: 
     <section className="flex flex-col gap-4">
       <div>
         <p className="eyebrow">{eyebrow}</p>
-        <h2 className="mt-1 font-display text-2xl font-semibold">{title}</h2>
+        <h2 className="mt-1 h2">{title}</h2>
       </div>
       {children}
     </section>
@@ -36,10 +36,10 @@ export function CoreSigns({ chart }: { chart: NatalChart }) {
     <div className="grid gap-3 sm:grid-cols-3">
       {cards.map((c) => (
         <div key={c.label} className="card flex flex-col gap-1 p-4">
-          <p className="text-xs font-medium text-muted">{c.label}</p>
-          <p className="font-display text-2xl font-semibold">{c.value}</p>
-          <p className="text-xs text-muted">{c.sub}</p>
-          <p className="mt-1 text-xs text-accent">{c.note}</p>
+          <p className="text-[13px] font-medium text-muted">{c.label}</p>
+          <p className="h2">{c.value}</p>
+          <p className="text-[13px] text-muted">{c.sub}</p>
+          <p className="mt-1 text-[13px] text-accent">{c.note}</p>
         </div>
       ))}
     </div>
@@ -51,7 +51,7 @@ export function BorderlineNote({ chart }: { chart: NatalChart }) {
   if (!chart.lagna || !b) return null;
   const mins = Math.abs(b.minutesToChange);
   return (
-    <div className="rounded-2xl border border-accent/60 bg-accent-soft p-4 text-sm">
+    <div className="rounded-3xl border border-accent/60 bg-accent-soft p-4 text-[15px]">
       <p className="font-semibold">Your lagna sits right on a sign boundary</p>
       <p className="mt-1 text-muted">
         It is {dms(chart.lagna.degree)} {SIGNS[chart.lagna.sign].en}. Had you been born about {mins} minute{mins === 1 ? "" : "s"}{" "}
@@ -97,11 +97,11 @@ export function Placements({ chart }: { chart: NatalChart }) {
                   <p className="font-semibold">
                     {g} {SANSKRIT[g] !== g && <span className="font-normal text-muted">· {SANSKRIT[g]}</span>}
                   </p>
-                  <p className="text-sm tabular-nums">
+                  <p className="text-[15px] tabular-nums">
                     {SIGNS[p.sign].en} {dms(p.degree)}
                   </p>
                 </div>
-                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[13px] text-muted">
                   <span>
                     House {p.house}
                     {alt ? ` (${alt.alternateHouses[g]} if ${alt.alternateSignName})` : ""}
@@ -117,7 +117,7 @@ export function Placements({ chart }: { chart: NatalChart }) {
           );
         })}
       </ul>
-      <p className="border-t border-line px-4 py-2.5 text-xs text-muted">
+      <p className="border-t border-line px-4 py-2.5 text-[13px] text-muted">
         Sidereal (Lahiri {dms(chart.ayanamsa.degrees)}), whole-sign houses
         {chart.houseBasis === "moon" ? " counted from the Moon" : ""}, mean nodes.
       </p>
@@ -127,7 +127,7 @@ export function Placements({ chart }: { chart: NatalChart }) {
 
 export function Yogas({ chart }: { chart: NatalChart }) {
   const present = chart.yogas.filter((y) => y.present);
-  if (present.length === 0) return <p className="text-sm text-muted">None of the classic yogas we check for are present.</p>;
+  if (present.length === 0) return <p className="text-[15px] text-muted">None of the classic yogas we check for are present.</p>;
   return (
     <div className="flex flex-wrap gap-2">
       {present.map((y) => (
@@ -170,11 +170,11 @@ export function DashaTimeline({ chart }: { chart: NatalChart }) {
                   {m.lord} mahadasha
                   {isNow && <span className="ml-2 chip border-accent bg-surface text-accent">Now</span>}
                 </p>
-                <p className="shrink-0 text-xs text-muted tabular-nums">
+                <p className="shrink-0 text-[13px] text-muted tabular-nums">
                   {fmtMonth(start)} – {fmtMonth(m.end)}
                 </p>
               </div>
-              <p className="text-xs text-muted">
+              <p className="text-[13px] text-muted">
                 Age {ageAt(birth, start)}–{ageAt(birth, m.end)} · {m.years} years
                 {m.start < birth ? " (balance at birth)" : ""}
               </p>
@@ -183,12 +183,12 @@ export function DashaTimeline({ chart }: { chart: NatalChart }) {
                   <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface" aria-label={`${Math.round(progress * 100)}% complete`}>
                     <div className="h-full rounded-full bg-accent" style={{ width: `${progress * 100}%` }} />
                   </div>
-                  <p className="mt-2 text-sm">
+                  <p className="mt-2 text-[15px]">
                     Antardasha: <strong>{current.antardasha.lord}</strong> until {fmtDate(current.antardasha.end)}
                     <br />
                     Pratyantar: <strong>{current.pratyantar.lord}</strong> until {fmtDate(current.pratyantar.end)}
                   </p>
-                  <details className="mt-2 text-sm">
+                  <details className="mt-2 text-[15px]">
                     <summary className="cursor-pointer text-muted">All antardashas in this period</summary>
                     <ul className="mt-2 grid gap-1">
                       {m.antardashas.map((a) => (
@@ -199,7 +199,7 @@ export function DashaTimeline({ chart }: { chart: NatalChart }) {
                           <span>
                             {m.lord}–{a.lord}
                           </span>
-                          <span className="text-xs text-muted tabular-nums">
+                          <span className="text-[13px] text-muted tabular-nums">
                             {fmtMonth(a.start)} – {fmtMonth(a.end)}
                           </span>
                         </li>
@@ -253,16 +253,16 @@ export function SaturnCycles({ chart }: { chart: NatalChart }) {
                 {label}
                 {isNow && <span className="ml-2 chip border-accent bg-surface text-accent">Now</span>}
               </p>
-              <p className="text-xs text-muted">
+              <p className="text-[13px] text-muted">
                 {c.kind === "sade_sati" ? `Saturn around your Moon (${phases.join(" → ")})` : "Saturn 8th from your Moon"}
               </p>
               {c.pauses.map(([from, to]) => (
-                <p key={from} className="text-xs text-muted">
+                <p key={from} className="text-[13px] text-muted">
                   Paused {fmtMonth(from)} – {fmtMonth(to)} while Saturn moved back
                 </p>
               ))}
             </div>
-            <p className="shrink-0 text-right text-xs text-muted tabular-nums">
+            <p className="shrink-0 text-right text-[13px] text-muted tabular-nums">
               {fmtMonth(c.start)} – {fmtMonth(c.end)}
               <br />
               {ages(ageAt(birth, c.start), ageAt(birth, c.end))}

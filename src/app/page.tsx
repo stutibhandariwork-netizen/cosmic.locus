@@ -1,151 +1,194 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
-import { templateAffirmation } from "@/lib/affirmations";
-import { dailyFacts } from "@/lib/astrology/daily";
-import { useChart, deviceTimeZone, localDay } from "@/lib/chart";
-import { fmtLocal, fmtTime, ordinal } from "@/lib/format";
-import { journalPrompt } from "@/lib/journal/core";
-import { personalCycles } from "@/lib/numerology/calc";
-import { PERSONAL_YEAR } from "@/lib/numerology/meanings";
-import { useData } from "@/lib/store";
-import { cardImage, DECK } from "@/lib/tarot/deck";
-import { GLYPH } from "@/components/astrology/format";
+import { useMemo, useState } from "react";
+import { MoonPhaseIcon, Sparkle, Star8, SunFace } from "@/components/art";
 import { Loading } from "@/components/gate";
 import { ProfileForm } from "@/components/profile-form";
-import { CardBack } from "@/components/tarot/card-back";
+import { AreaTile, LinkRow, ReadingCard, StarProgress } from "@/components/ui";
+import { chartFor, deviceTimeZone, localDay, useChart } from "@/lib/chart";
+import { bigThree, moonNow } from "@/lib/sky";
+import { update, useData, type Prefs, type Profile } from "@/lib/store";
+import { greetingFor, todayReading } from "@/lib/today";
 
 export default function Home() {
   const data = useData();
   const chart = useChart(data?.profile);
-  const tz = typeof window === "undefined" ? "Asia/Kolkata" : deviceTimeZone();
-  const today = useMemo(() => localDay(new Date(), tz), [tz]);
-  const facts = useMemo(() => (chart ? dailyFacts(chart.chart, today.start, today.date) : null), [chart, today]);
-
   if (!data) return <Loading />;
-  if (!data.profile || !chart || !facts) return <Welcome />;
+  if (!data.profile || !chart) return <Onboarding />;
+  return <Today profile={data.profile} chart={chart.chart} prefs={data.prefs} />;
+}
 
-  const p = data.profile;
-  const firstName = p.name.split(" ")[0];
-  const greeting = today.hour < 12 ? "Good morning" : today.hour < 17 ? "Good afternoon" : "Good evening";
-  const a = templateAffirmation(facts);
-  const [, m, d] = p.birthDate.split("-").map(Number);
-  const personal = personalCycles(m, d, today.parts);
-  const cardOfDay = data.tarot.find((s) => s.spread === "CARD_OF_DAY" && s.createdAt >= today.start.toISOString());
-  const drawn = cardOfDay?.picks[0] ? { card: DECK[cardOfDay.deckOrder[cardOfDay.picks[0] - 1]], reversed: cardOfDay.reversals[cardOfDay.picks[0] - 1] } : null;
+function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<typeof chartFor>["chart"]; prefs: Prefs }) {
+  const tz = deviceTimeZone();
+  const now = useMemo(() => new Date(), []);
+  const day = useMemo(() => localDay(now, tz), [now, tz]);
+  const reading = useMemo(() => todayReading(profile, chart, prefs.system, day), [profile, chart, prefs.system, day]);
+  const moon = useMemo(() => moonNow(now, prefs.system), [now, prefs.system]);
+  const calm = prefs.comfort;
+  const heroH = calm ? 220 : 262;
+  const dateLabel = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(now).replace(" ", " · ");
+  const firstName = profile.name.split(" ")[0];
 
   return (
-    <div className="flex flex-col gap-6 pt-4">
-      <header>
-        <p className="text-sm text-muted">{fmtLocal(today.start.toISOString(), tz)}</p>
-        <h1 className="mt-1 font-display text-3xl font-semibold">
-          {greeting}, {firstName}
-        </h1>
-      </header>
-
-      <section className="card relative overflow-hidden border-accent/40 p-6">
-        <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 size-48 rounded-full bg-accent/10 blur-2xl" />
-        <p className="eyebrow">Today&apos;s affirmation</p>
-        <blockquote className="mt-3 font-display text-2xl leading-snug font-medium sm:text-3xl">“{a.text}”</blockquote>
-        <p className="mt-4 text-sm text-muted">{a.why}</p>
-      </section>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div className="card flex flex-col gap-1 p-4">
-          <p className="text-xs font-medium text-muted">Moon today</p>
-          <p className="font-display text-xl font-semibold">
-            <span className="text-accent">{GLYPH.Moon}</span> {facts.moon.sign}
-          </p>
-          <p className="text-xs text-muted">
-            {ordinal(facts.moon.houseFromMoon)} from your Moon · {facts.moon.nakshatra}
-          </p>
-          {facts.moon.changes && (
-            <p className="text-xs text-muted">
-              Into {facts.moon.changes.sign} at {fmtTime(facts.moon.changes.at, tz)}
-            </p>
+    <div className="-mx-4 -mt-6 flex flex-col">
+      <div className="relative flex shrink-0 flex-col bg-peach px-5 pt-4" style={{ height: heroH }}>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <p className="text-[13px] font-bold tracking-[0.14em] uppercase">{dateLabel}</p>
+            <h1 className="font-display text-[22px] leading-tight font-semibold">
+              {greetingFor(day.hour)}, {firstName}
+            </h1>
+          </div>
+          <Link href="/settings/" aria-label="Settings" className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-cocoa bg-cream hover:bg-butter">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
+              <circle cx="16" cy="7" r="2" />
+              <circle cx="8" cy="17" r="2" />
+            </svg>
+          </Link>
+        </div>
+        <div className="relative flex flex-1 items-end justify-center">
+          {!calm && (
+            <>
+              <Star8 size={26} fill="var(--cream)" className="twinkle absolute" style={{ left: 34, bottom: 70 }} />
+              <Star8 size={20} className="twinkle twinkle-2 absolute" style={{ right: 40, bottom: 110 }} />
+              <Sparkle size={14} className="twinkle twinkle-3 absolute" style={{ right: 70, bottom: 34 }} />
+              <Sparkle size={12} className="twinkle twinkle-2 absolute" style={{ left: 80, bottom: 140 }} />
+            </>
           )}
+          <div
+            className="flex w-[170px] items-center justify-center overflow-hidden rounded-t-[85px] border-2 border-b-0 border-cocoa bg-butter"
+            style={{ height: heroH - 92 }}
+          >
+            <SunFace size={150} face="var(--cream)" className="sun-wake" label={`Today's sun is smiling`} />
+          </div>
         </div>
-        {facts.dasha && (
-          <Link href="/chart/" className="card flex flex-col gap-1 p-4 hover:border-accent/60">
-            <p className="text-xs font-medium text-muted">Your dasha</p>
-            <p className="font-display text-xl font-semibold">
-              {facts.dasha.mahadasha.lord}–{facts.dasha.antardasha.lord}
-            </p>
-            <p className="text-xs text-muted">Pratyantar: {facts.dasha.pratyantar.lord}</p>
-          </Link>
-        )}
-        {drawn ? (
-          <Link href={`/tarot/reading/?id=${cardOfDay!.id}`} className="card flex items-center gap-3 p-4 hover:border-accent/60">
-            <div className="relative aspect-[100/172] w-11 shrink-0 overflow-hidden rounded">
-              <Image src={cardImage(drawn.card)} alt="" fill sizes="44px" className={`object-cover ${drawn.reversed ? "rotate-180" : ""}`} />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-medium text-muted">Card of the day</p>
-              <p className="text-sm font-semibold">{drawn.card.name}</p>
-            </div>
-          </Link>
-        ) : (
-          <Link href="/tarot/new/?spread=card-of-the-day" className="card flex items-center gap-3 p-4 hover:border-accent/60">
-            <CardBack className="w-11 shrink-0" />
-            <div className="min-w-0">
-              <p className="text-xs font-medium text-muted">Card of the day</p>
-              <p className="text-sm font-semibold text-accent">{cardOfDay ? "Choose your card" : "Draw today's card"}</p>
-            </div>
-          </Link>
-        )}
-        <Link href="/numerology/" className="card flex flex-col gap-1 p-4 hover:border-accent/60">
-          <p className="text-xs font-medium text-muted">Personal day</p>
-          <p className="font-display text-3xl font-semibold text-accent">{personal.day}</p>
-          <p className="text-xs text-muted">{PERSONAL_YEAR[personal.day].split(":")[0]}</p>
-        </Link>
       </div>
+      <div className="pattern-scallop-edge shrink-0" aria-hidden />
 
-      <Link href="/week/" className="card flex items-center justify-between gap-3 border-accent/50 bg-accent-soft hover:opacity-90">
-        <div>
-          <p className="font-semibold">Your week, planet by planet</p>
-          <p className="text-sm text-muted">Where each planet was, where it is, and what comes next</p>
+      <div className="flex flex-col gap-3.5 px-4 pt-1.5">
+        <ReadingCard
+          eyebrow={`Today · ${reading.base.signName} ${reading.base.body}`}
+          headline={reading.headline}
+          action={
+            <Link href="/day/" className="btn">
+              Read deeper
+            </Link>
+          }
+        >
+          <p>{reading.body}</p>
+        </ReadingCard>
+
+        <div className="grid grid-cols-3 gap-2.5">
+          <AreaTile href="/day/#love" area="love" title="Love" line={reading.love.line} />
+          <AreaTile href="/day/#work" area="work" title="Work" line={reading.work.line} />
+          <AreaTile href="/day/#self-care" area="selfcare" title="Self-care" line={reading.selfcare.line} />
         </div>
-        <span aria-hidden className="text-xl text-accent">
-          →
-        </span>
-      </Link>
 
-      <Link href="/journal/" className="card flex flex-col gap-1 hover:border-accent/60">
-        <span className="eyebrow">Today&apos;s journal prompt</span>
-        <span className="font-display text-lg">{journalPrompt(facts)}</span>
-      </Link>
+        <div className="flex items-center gap-3 rounded-[18px] border-2 border-outline bg-surface px-3.5 py-2.5">
+          <MoonPhaseIcon elongation={moon.elongation} />
+          <p className="text-[15px] leading-snug">
+            <b>{moon.phase}</b> · Moon in {moon.signName}
+            {day.hour < 12 && reading.moonSign !== moon.signName && `, moving into ${reading.moonSign} today`}
+          </p>
+        </div>
+
+        <div className="mt-2 flex flex-col gap-2.5">
+          <LinkRow href="/week/" title="Your week" sub="Where each planet is heading" />
+          <LinkRow href="/numerology/" title="Your numbers" sub="Life path and today's personal day" />
+        </div>
+      </div>
     </div>
   );
 }
 
-function Welcome() {
+function Onboarding() {
+  const [details, setDetails] = useState<Profile | null>(null);
+  const [step, setStep] = useState<1 | 2>(1);
+  const draft = step === 2 ? details : null;
+  const [system, setSystem] = useState<Prefs["system"]>("vedic");
+  const preview = useMemo(() => {
+    if (!draft) return null;
+    const { chart } = chartFor(draft);
+    return { vedic: bigThree(chart, "vedic"), western: bigThree(chart, "western") };
+  }, [draft]);
+
   return (
-    <div className="flex flex-col gap-10 pt-6">
-      <section className="flex flex-col gap-4">
-        <p className="eyebrow">Astrology · Tarot · Numerology</p>
-        <h1 className="font-display text-4xl leading-[1.1] font-semibold tracking-tight">Your chart, read the way a good astrologer would.</h1>
-        <p className="text-lg text-muted">
-          Grahify calculates your Vedic chart precisely, from planet positions and dashas to this week&apos;s transits. This
-          is the try-it version: it runs entirely in your browser and nothing you type leaves your device.
-        </p>
-      </section>
-      <section className="card flex flex-col gap-4">
-        <h2 className="font-display text-2xl font-semibold">Your birth details</h2>
-        <ProfileForm />
-      </section>
-      <div className="grid gap-3 sm:grid-cols-3">
-        {[
-          ["Calculated, not guessed", "Positions, houses and dashas come from astronomical code (sidereal, Lahiri)."],
-          ["Your time, your place", "Birthplaces worldwide with the correct historical time zone."],
-          ["Private by design", "No account, no server. Delete it all any time from the profile button."],
-        ].map(([t, b]) => (
-          <div key={t} className="card">
-            <h3 className="font-display text-lg font-semibold">{t}</h3>
-            <p className="mt-1 text-sm text-muted">{b}</p>
-          </div>
-        ))}
+    <div className="-mx-4 -mt-6 -mb-8 flex min-h-dvh flex-col bg-periwinkle">
+      <div className="relative h-[196px] shrink-0 overflow-hidden">
+        <Star8 size={22} fill="var(--cream)" className="twinkle absolute" style={{ left: 36, top: 40 }} />
+        <Sparkle size={16} fill="var(--cream)" className="twinkle twinkle-2 absolute" style={{ right: 44, top: 64 }} />
+        <Sparkle size={12} fill="var(--butter)" className="twinkle twinkle-3 absolute" style={{ right: 90, top: 28 }} />
+        <div className="sun-wake absolute left-1/2 -ml-[100px]" style={{ bottom: -110 }}>
+          <SunFace size={200} mood="rising" face="var(--peach)" rays="var(--butter)" label="A smiling sun rising" />
+        </div>
+      </div>
+
+      <div className="relative -mt-0.5 flex flex-1 flex-col gap-3.5 rounded-t-[32px] border-t-2 border-cocoa bg-cream px-5 pt-6 pb-6">
+        <StarProgress step={draft ? 2 : 1} of={2} />
+        {!draft ? (
+          <>
+            <div className="flex flex-col gap-1">
+              <h1 className="title">Hello, starlight.</h1>
+              <p>Let&apos;s find your place in the sky.</p>
+            </div>
+            <ProfileForm
+              initial={details}
+              submitLabel="Next"
+              onSubmit={(p) => {
+                setDetails(p);
+                setStep(2);
+              }}
+              pinned
+            />
+          </>
+        ) : (
+          <>
+            <div className="flex flex-col gap-1">
+              <h1 className="title">Which sky is yours?</h1>
+              <p>Two ways of reading the same stars. You can switch any time.</p>
+            </div>
+            <fieldset className="flex flex-col gap-3">
+              <legend className="sr-only">Chart style</legend>
+              {(
+                [
+                  ["vedic", "Vedic", "Measured against the stars (sidereal, Lahiri), as Indian astrologers read it. Your day is read from your Moon sign."],
+                  ["western", "Western", "The tropical zodiac most magazines use. Your day is read from your Sun sign."],
+                ] as const
+              ).map(([id, title, text]) => {
+                const signs = preview![id];
+                return (
+                  <label
+                    key={id}
+                    className={`flex cursor-pointer gap-3 rounded-3xl border-2 border-cocoa p-4 ${system === id ? "bg-butter" : "bg-white"}`}
+                  >
+                    <input type="radio" name="system" value={id} checked={system === id} onChange={() => setSystem(id)} className="mt-1 size-[22px] shrink-0 accent-[var(--rust)]" />
+                    <span className="flex flex-col gap-1">
+                      <span className="font-display text-[22px] leading-tight font-semibold">{title}</span>
+                      <span className="text-[15px] leading-snug">{text}</span>
+                      <span className="text-[15px] font-bold">
+                        Sun {signs.sun.signName} · Moon {signs.moon.signName}
+                        {signs.rising ? ` · Rising ${signs.rising.signName}` : ""}
+                      </span>
+                    </span>
+                  </label>
+                );
+              })}
+            </fieldset>
+            <div className="mt-auto flex flex-col gap-2 pt-2">
+              <button
+                className="btn btn-wide"
+                onClick={() => update((d) => ({ ...d, profile: draft, prefs: { ...d.prefs, system } }))}
+              >
+                Show me my sky
+              </button>
+              <button className="btn-ghost w-full border-0 bg-transparent" onClick={() => setStep(1)}>
+                Back to my details
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

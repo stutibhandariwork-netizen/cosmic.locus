@@ -18,7 +18,7 @@ export function ChartTabs({ d1, d9 }: { d1: string; d9: string }) {
             role="tab"
             aria-selected={tab === t.id}
             onClick={() => setTab(t.id)}
-            className={`rounded-full px-3 py-2 text-sm font-medium transition ${tab === t.id ? "bg-surface text-ink shadow-sm" : "text-muted"}`}
+            className={`rounded-full px-3 py-2 text-[15px] font-medium transition ${tab === t.id ? "bg-surface text-ink shadow-sm" : "text-muted"}`}
           >
             {t.label}
           </button>
@@ -29,7 +29,7 @@ export function ChartTabs({ d1, d9 }: { d1: string; d9: string }) {
         className="mx-auto aspect-square w-full max-w-sm text-ink [&_svg]:h-full [&_svg]:w-full"
         dangerouslySetInnerHTML={{ __html: tab === "d1" ? d1 : d9 }}
       />
-      <p className="mt-3 text-center text-xs text-muted">
+      <p className="mt-3 text-center text-[13px] text-muted">
         {tabs.find((t) => t.id === tab)!.sub}. North Indian style: house 1 is the top diamond, numbers are signs (1 = Aries).
       </p>
     </div>

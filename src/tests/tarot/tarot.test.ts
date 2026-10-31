@@ -1,16 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { existsSync } from "node:fs";
-import path from "node:path";
+import { numeralOf, voiceOf } from "@/lib/content/tarot-voice";
 import { DECK } from "@/lib/tarot/deck";
 import { checkClarifier, checkPick, shuffleDeck, type DrawState } from "@/lib/tarot/shuffle";
 import { SPREADS, yesNoVerdict } from "@/lib/tarot/spreads";
 
 describe("deck", () => {
-  it("has 78 unique cards indexed 0-77 with an image for each", () => {
+  it("has 78 unique cards indexed 0-77, each with a headline and a line in the brand voice", () => {
     expect(DECK).toHaveLength(78);
     expect(DECK.map((c) => c.index)).toEqual(Array.from({ length: 78 }, (_, i) => i));
     expect(new Set(DECK.map((c) => c.id)).size).toBe(78);
-    for (const c of DECK) expect(existsSync(path.join(process.cwd(), "public", "tarot", `${c.id}.jpg`)), c.id).toBe(true);
+    for (const c of DECK) {
+      const v = voiceOf(c);
+      expect(v.headline.length, c.id).toBeGreaterThan(5);
+      expect(v.line.length, c.id).toBeGreaterThan(15);
+    }
+    expect(voiceOf(DECK[17]).headline).toBe("Hope is quietly coming back.");
+    expect([numeralOf(DECK[17]), numeralOf(DECK[22]), numeralOf(DECK[28]), numeralOf(DECK[35])]).toEqual(["XVII", "ACE · WANDS", "VII · WANDS", "WANDS"]);
   });
 
   it("names and orders the minor arcana", () => {

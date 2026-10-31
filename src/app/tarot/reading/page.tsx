@@ -7,7 +7,7 @@ import { Loading } from "@/components/gate";
 import { DeckPicker } from "@/components/tarot/deck-picker";
 import { FlipCard } from "@/components/tarot/flip-card";
 import { useData, type TarotSession } from "@/lib/store";
-import { cardImage, DECK } from "@/lib/tarot/deck";
+import { DECK } from "@/lib/tarot/deck";
 import { viewOf } from "@/lib/tarot/local";
 
 export default function ReadingPage() {
@@ -25,7 +25,7 @@ function Reading() {
   const session = data.tarot.find((s) => s.id === id);
   if (!session) {
     return (
-      <p className="pt-6 text-sm text-muted">
+      <p className="pt-6 text-[15px] text-muted">
         This reading isn&apos;t on this device. <Link href="/tarot/" className="underline">Back to tarot</Link>
       </p>
     );
@@ -39,12 +39,12 @@ function ReadingView({ session }: { session: TarotSession }) {
   const many = spread.positions.length > 1;
 
   return (
-    <div className="flex flex-col gap-8 pt-4">
+    <div className="flex flex-col gap-8">
       <header>
-        <Link href="/tarot/" className="text-sm text-muted">
+        <Link href="/tarot/" className="link inline-block self-start py-2.5">
           ← Tarot
         </Link>
-        <p className="eyebrow mt-4">{spread.title}</p>
+        <p className="eyebrow mt-2">{spread.title}</p>
         {session.question ? (
           <h1 className="mt-2 font-display text-2xl leading-snug font-semibold">“{session.question}”</h1>
         ) : (
@@ -58,13 +58,13 @@ function ReadingView({ session }: { session: TarotSession }) {
           return (
             <div key={p.name} className="flex flex-col items-center gap-2">
               {c ? (
-                <FlipCard seenKey={`${session.id}:${c.deckPosition}`} image={cardImage(DECK[c.cardIndex])} name={DECK[c.cardIndex].name} reversed={c.reversed} size={many ? "sm" : "md"} />
+                <FlipCard seenKey={`${session.id}:${c.deckPosition}`} card={DECK[c.cardIndex]} reversed={c.reversed} size={many ? "sm" : "md"} />
               ) : (
-                <div className={`${many ? "w-20" : "w-36 sm:w-44"} grid aspect-[100/172] place-items-center rounded-[7%] border-2 border-dashed border-line text-xs text-muted`}>
+                <div className={`${many ? "w-20" : "w-36 sm:w-44"} grid aspect-[100/172] place-items-center rounded-[7%] border-2 border-dashed border-line text-[13px] text-muted`}>
                   {i + 1}
                 </div>
               )}
-              <p className="max-w-24 text-center text-xs font-medium text-muted">{p.name}</p>
+              <p className="max-w-24 text-center text-[13px] font-medium text-muted">{p.name}</p>
             </div>
           );
         })}
@@ -82,9 +82,9 @@ function ReadingView({ session }: { session: TarotSession }) {
         <>
           {v.verdict && (
             <div className="card flex flex-col items-center gap-1 border-accent/60 bg-accent-soft text-center">
-              <p className="text-xs font-semibold tracking-[0.14em] text-muted uppercase">The cards say</p>
+              <p className="text-[13px] font-semibold tracking-[0.14em] text-muted uppercase">The cards say</p>
               <p className="font-display text-5xl font-semibold">{v.verdict}</p>
-              <p className="text-sm text-muted">
+              <p className="text-[15px] text-muted">
                 {DECK[v.cards[0].cardIndex].name}, {v.cards[0].reversed ? "reversed: it softens the card's leaning" : "upright"}
               </p>
             </div>
@@ -98,7 +98,7 @@ function ReadingView({ session }: { session: TarotSession }) {
         </>
       )}
 
-      <p className="text-center text-xs text-muted">
+      <p className="text-center text-[13px] text-muted">
         Deck shuffled with your browser&apos;s secure random generator and saved before you chose.
       </p>
     </div>
@@ -117,16 +117,16 @@ function CardDetail({ session, index }: { session: TarotSession; index: number }
   return (
     <section className="card flex flex-col gap-4">
       <div className="flex gap-4">
-        <FlipCard seenKey={`${session.id}:${c.deckPosition}:detail`} image={cardImage(card)} name={card.name} reversed={c.reversed} size="sm" />
+        <FlipCard seenKey={`${session.id}:${c.deckPosition}:detail`} card={card} reversed={c.reversed} size="sm" />
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold tracking-wide text-accent uppercase">{c.positionName}</p>
+          <p className="text-[13px] font-semibold tracking-wide text-accent uppercase">{c.positionName}</p>
           <h2 className="font-display text-xl font-semibold">{card.name}</h2>
           <span className={`chip mt-1 ${c.reversed ? "text-warn" : "text-good"}`}>{c.reversed ? "Reversed" : "Upright"}</span>
-          <p className="mt-2 text-xs text-muted">{side.keywords.join(" · ")}</p>
+          <p className="mt-2 text-[13px] text-muted">{side.keywords.join(" · ")}</p>
         </div>
       </div>
-      <p className="text-sm text-muted">
-        <span className="font-semibold text-ink">On the card: </span>
+      <p className="text-[15px] text-muted">
+        <span className="font-semibold text-ink">In the classic deck: </span>
         {card.scene}
       </p>
       <p className="text-[15px] leading-relaxed">
@@ -134,21 +134,21 @@ function CardDetail({ session, index }: { session: TarotSession; index: number }
       </p>
 
       {clarifier ? (
-        <div className="flex gap-3 rounded-2xl bg-surface-2 p-3">
-          <FlipCard seenKey={`${session.id}:${clarifier.deckPosition}`} image={cardImage(DECK[clarifier.cardIndex])} name={DECK[clarifier.cardIndex].name} reversed={clarifier.reversed} size="sm" />
+        <div className="flex gap-3 rounded-3xl bg-surface-2 p-3">
+          <FlipCard seenKey={`${session.id}:${clarifier.deckPosition}`} card={DECK[clarifier.cardIndex]} reversed={clarifier.reversed} size="sm" />
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold tracking-wide text-accent uppercase">Clarifier</p>
+            <p className="text-[13px] font-semibold tracking-wide text-accent uppercase">Clarifier</p>
             <p className="font-semibold">
               {DECK[clarifier.cardIndex].name}
               {clarifier.reversed ? " (reversed)" : ""}
             </p>
-            <p className="mt-1 text-sm">{(clarifier.reversed ? DECK[clarifier.cardIndex].reversed : DECK[clarifier.cardIndex].upright).meaning}</p>
+            <p className="mt-1 text-[15px]">{(clarifier.reversed ? DECK[clarifier.cardIndex].reversed : DECK[clarifier.cardIndex].upright).meaning}</p>
           </div>
         </div>
       ) : picking ? (
-        <div className="rounded-2xl border border-line bg-surface-2 p-4">
+        <div className="rounded-3xl border border-line bg-surface-2 p-4">
           <DeckPicker session={session} used={v.used} prompt={`Choose a clarifier for ${card.name}`} clarifyPick={index} onDone={() => setPicking(false)} />
-          <button className="mt-2 w-full text-center text-sm text-muted underline" onClick={() => setPicking(false)}>
+          <button className="mt-2 w-full text-center text-[15px] text-muted underline" onClick={() => setPicking(false)}>
             Cancel
           </button>
         </div>

@@ -4,8 +4,21 @@ import { useEffect, useId, useRef, useState } from "react";
 import { searchPlaces, type Place } from "@/lib/places";
 import { update, type Profile } from "@/lib/store";
 
-/** Birth details form. Saves to this device only. */
-export function ProfileForm({ initial, submitLabel = "Calculate my chart", onSaved }: { initial?: Profile | null; submitLabel?: string; onSaved?: () => void }) {
+/** Birth details form. Saves to this device only, or hands the details to `onSubmit` (onboarding). */
+export function ProfileForm({
+  initial,
+  submitLabel = "Save",
+  onSaved,
+  onSubmit,
+  pinned = false,
+}: {
+  initial?: Profile | null;
+  submitLabel?: string;
+  onSaved?: () => void;
+  onSubmit?: (p: Profile) => void;
+  /** Pin the button to the bottom of a full-height sheet. */
+  pinned?: boolean;
+}) {
   const [name, setName] = useState(initial?.name ?? "");
   const [birthDate, setBirthDate] = useState(initial?.birthDate ?? "");
   const [birthTime, setBirthTime] = useState(initial?.birthTime ?? "");
@@ -15,51 +28,49 @@ export function ProfileForm({ initial, submitLabel = "Calculate my chart", onSav
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim()) return setError("Please enter a name.");
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || birthDate < "1800-01-01" || new Date(birthDate) > new Date()) return setError("Please check the date of birth.");
-    if (!timeUnknown && !/^\d{2}:\d{2}$/.test(birthTime)) return setError("Enter your birth time, or tick “I don’t know my exact time”.");
-    if (!place) return setError("Choose your birthplace from the list.");
-    update((d) => ({ ...d, profile: { name: name.trim(), birthDate, birthTime: timeUnknown ? null : birthTime, place } }));
+    if (!name.trim()) return setError("What should we call you? Add a name to carry on.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || birthDate < "1800-01-01" || new Date(birthDate) > new Date()) return setError("That birth date doesn't look quite right. Have another look?");
+    if (!timeUnknown && !/^\d{2}:\d{2}$/.test(birthTime)) return setError("Add your birth time, or tick the box if you're not sure.");
+    if (!place) return setError("Pick your birth place from the list as you type.");
+    const profile = { name: name.trim(), birthDate, birthTime: timeUnknown ? null : birthTime, place };
+    if (onSubmit) return onSubmit(profile);
+    update((d) => ({ ...d, profile }));
     onSaved?.();
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-6">
+    <form onSubmit={submit} className={`flex flex-col gap-3.5 ${pinned ? "flex-1" : ""}`} noValidate>
       <div>
         <label htmlFor="name" className="label">
-          Name
+          Your name
         </label>
-        <input id="name" className="field" value={name} onChange={(e) => setName(e.target.value)} autoComplete="given-name" required />
+        <input id="name" className="field" value={name} onChange={(e) => setName(e.target.value)} autoComplete="given-name" placeholder="What should we call you?" />
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
+      <div className="grid grid-cols-2 gap-2.5">
+        <div className="min-w-0">
           <label htmlFor="birthDate" className="label">
-            Date of birth
+            Birth date
           </label>
-          <input id="birthDate" type="date" className="field" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} min="1800-01-01" required />
+          <input id="birthDate" type="date" className="field px-3" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} min="1800-01-01" />
         </div>
-        <div>
+        <div className="min-w-0">
           <label htmlFor="birthTime" className="label">
             Birth time
           </label>
-          <input id="birthTime" type="time" className="field disabled:opacity-40" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} disabled={timeUnknown} />
+          <input id="birthTime" type="time" className="field px-3" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} disabled={timeUnknown} />
         </div>
-        <label className="col-span-2 flex items-start gap-3 text-sm">
-          <input type="checkbox" className="mt-0.5 size-5 accent-[var(--primary)]" checked={timeUnknown} onChange={(e) => setTimeUnknown(e.target.checked)} />
-          <span>
-            I don&apos;t know my exact time
-            <span className="block text-xs text-muted">We&apos;ll read your chart from the Moon sign. Your rising sign (lagna) needs the exact time.</span>
-          </span>
-        </label>
       </div>
+      <label htmlFor="unknown" className="flex min-h-11 items-center gap-2.5 text-[15px] leading-snug">
+        <input id="unknown" type="checkbox" className="size-[22px] shrink-0 accent-[var(--rust)]" checked={timeUnknown} onChange={(e) => setTimeUnknown(e.target.checked)} />
+        <span>I&apos;m not sure of my time. A rough guess helps, and you can update it later.</span>
+      </label>
       <PlacePicker value={place} onChange={setPlace} />
       {error && (
-        <p className="rounded-xl bg-warn-soft px-4 py-3 text-sm text-warn" role="alert">
+        <p className="rounded-[14px] border-2 border-outline bg-warn-soft px-4 py-3 text-[15px]" role="alert">
           {error}
         </p>
       )}
-      <button className="btn">{submitLabel}</button>
-      <p className="text-center text-xs text-muted">Your details are saved only in this browser. Nothing is sent to a server.</p>
+      <button className={`btn btn-wide ${pinned ? "mt-auto" : "mt-2"}`}>{submitLabel}</button>
     </form>
   );
 }
@@ -109,7 +120,7 @@ function PlacePicker({ value, onChange }: { value: Profile["place"] | null; onCh
   return (
     <div className="relative">
       <label htmlFor={`${listId}-input`} className="label">
-        Birthplace
+        Birth place
       </label>
       <input
         id={`${listId}-input`}
@@ -120,7 +131,7 @@ function PlacePicker({ value, onChange }: { value: Profile["place"] | null; onCh
         aria-autocomplete="list"
         aria-activedescendant={open && options[active] ? `${listId}-${active}` : undefined}
         autoComplete="off"
-        placeholder="Start typing a town or city"
+        placeholder="City, country"
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -144,14 +155,14 @@ function PlacePicker({ value, onChange }: { value: Profile["place"] | null; onCh
         }}
       />
       {open && options.length > 0 && (
-        <ul id={listId} role="listbox" className="absolute z-20 mt-1 max-h-72 w-full overflow-auto rounded-xl border border-line bg-surface p-1 shadow-lg">
+        <ul id={listId} role="listbox" className="absolute z-30 mt-1 max-h-72 w-full overflow-auto rounded-[14px] border-2 border-outline bg-surface p-1 shadow-[4px_4px_0_var(--lilac)]">
           {options.map((o, i) => (
             <li
               key={o.label + i}
               id={`${listId}-${i}`}
               role="option"
               aria-selected={i === active}
-              className={`cursor-pointer rounded-lg px-3 py-2.5 text-sm ${i === active ? "bg-surface-2" : ""}`}
+              className={`flex min-h-11 cursor-pointer items-center rounded-[10px] px-3 py-2 text-[15px] ${i === active ? "bg-surface-2 font-bold" : ""}`}
               onMouseDown={(e) => e.preventDefault()}
               onMouseEnter={() => setActive(i)}
               onClick={() => choose(o)}
@@ -163,10 +174,10 @@ function PlacePicker({ value, onChange }: { value: Profile["place"] | null; onCh
       )}
       <p className="hint">
         {value
-          ? `Time zone: ${value.timeZone}, with historical changes applied.`
+          ? `Found it. Time zone: ${value.timeZone}.`
           : loading
-            ? "Loading places…"
-            : "Hindi and Odia spellings work too, e.g. कटक or କଟକ."}
+            ? "Looking through the map…"
+            : "Start typing and pick your town from the list."}
       </p>
     </div>
   );

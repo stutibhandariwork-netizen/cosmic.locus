@@ -34,7 +34,7 @@ function NewReading() {
 
   if (!spread) {
     return (
-      <p className="pt-6 text-sm text-muted">
+      <p className="pt-6 text-[15px] text-muted">
         Unknown spread. <Link href="/tarot/" className="underline">Back to tarot</Link>
       </p>
     );
@@ -53,8 +53,8 @@ function NewReading() {
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-6 pt-6">
-      <Link href="/tarot/" className="text-sm text-muted">
+    <div className="flex flex-col gap-6">
+      <Link href="/tarot/" className="link inline-block self-start py-2.5">
         ← Tarot
       </Link>
       <div>
@@ -85,10 +85,10 @@ function NewReading() {
               placeholder={PLACEHOLDERS[spread.key]}
             />
             {spread.key === "YES_NO" && <p className="hint">Ask something that can be answered yes or no.</p>}
-            {error && <p className="mt-1.5 text-sm text-warn">Please type your question first.</p>}
+            {error && <p className="mt-1.5 text-[15px] text-warn">Please type your question first.</p>}
           </div>
         )}
-        <p className="text-sm text-muted">Take a breath and hold your question in mind. When you&apos;re ready, shuffle.</p>
+        <p className="text-[15px] text-muted">Take a breath and hold your question in mind. When you&apos;re ready, shuffle.</p>
         <button className="btn">{existingDaily ? "See today's card" : "Shuffle the deck"}</button>
       </form>
     </div>

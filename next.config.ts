@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
-/** Served from https://stutibhandariwork-netizen.github.io/cosmic.locus as static files. */
-export const BASE_PATH = "/cosmic.locus";
+/**
+ * Served from https://stutibhandariwork-netizen.github.io/cosmic.locus as static files.
+ * DEV_BASE_PATH overrides it locally: `next dev` redirect-loops on a root base path with a dot in it.
+ */
+export const BASE_PATH = process.env.DEV_BASE_PATH ?? "/cosmic.locus";
 
 const nextConfig: NextConfig = {
   output: "export",
