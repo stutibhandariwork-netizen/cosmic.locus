@@ -55,33 +55,38 @@ function Locus({ profile, chart, timeNote, system, astrologer }: { profile: Prof
 
       <StoryCard chart={chart} system={system} />
 
-      <div className="py-1">
+      <figure className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-indigo to-indigo-deep px-3 pt-4 pb-3 shadow-glow">
+        <StarDust />
         <ZodiacWheel three={three} />
-      </div>
+        <figcaption className="relative mt-2 text-center text-[13px] text-gold-soft">
+          The sky the day you were born · {born}
+          {profile.birthTime ? `, ${profile.birthTime}` : ""} · {profile.place.label.split(",")[0]}
+        </figcaption>
+      </figure>
 
       <h2 id="big-three" className="h2 mt-1 scroll-mt-6">
         Your big three
       </h2>
       <ul className="flex flex-col gap-2.5">
-        <BigThreeRow dot="bg-ochre" title={`Sun · ${three.sun.signName}`} sa={sa(three.sun.sign)} line={SUN_LINES[three.sun.sign]}>
+        <BigThreeRow dot="bg-gold" planet="Sun" sign={three.sun.sign} title={`Sun · ${three.sun.signName}`} sa={sa(three.sun.sign)} line={SUN_LINES[three.sun.sign]}>
           On {born} the Sun was at {dms(three.sun.degree)} {three.sun.signName}, {zodiac}. Your Sun sign is the heart of you: what you&apos;re building and what
           makes you feel most alive.
           {vedic && ` Its nakshatra is ${chart.planets.Sun.nakshatra.name}, pada ${chart.planets.Sun.nakshatra.pada}.`}
         </BigThreeRow>
-        <BigThreeRow dot="bg-blush" title={`Moon · ${three.moon.signName}`} sa={sa(three.moon.sign)} line={MOON_LINES[three.moon.sign]}>
+        <BigThreeRow dot="bg-blush" planet="Moon" sign={three.moon.sign} title={`Moon · ${three.moon.signName}`} sa={sa(three.moon.sign)} line={MOON_LINES[three.moon.sign]}>
           The Moon was at {dms(three.moon.degree)} {three.moon.signName}, {zodiac}. Your Moon sign is your inner weather: how you feel and what soothes you.
           {vedic &&
             ` In Vedic astrology it matters most, so your daily reading is counted from it. Its nakshatra is ${chart.planets.Moon.nakshatra.name}, pada ${chart.planets.Moon.nakshatra.pada}.`}
         </BigThreeRow>
         {three.rising ? (
-          <BigThreeRow dot="bg-periwinkle" title={`Rising · ${three.rising.signName}`} sa={sa(three.rising.sign)} line={RISING_LINES[three.rising.sign]}>
+          <BigThreeRow dot="bg-periwinkle" sign={three.rising.sign} title={`Rising · ${three.rising.signName}`} sa={sa(three.rising.sign)} line={RISING_LINES[three.rising.sign]}>
             {three.rising.signName} was coming up over the eastern horizon at {profile.birthTime} in {profile.place.label}, at {dms(three.rising.degree)}. Your
             rising sign colours first impressions and sets the order of your houses.
             {vedic && chart.lagna && ` In Vedic astrology it is your lagna, in ${chart.lagna.nakshatra.name} nakshatra, pada ${chart.lagna.nakshatra.pada}.`}
             {timeNote && ` ${timeNote}`}
           </BigThreeRow>
         ) : (
-          <li className="flex items-center gap-3 rounded-[18px] bg-surface px-3.5 py-3">
+          <li className="flex items-center gap-3 rounded-[18px] border border-dashed border-field bg-surface px-3.5 py-3">
             <span className="size-3.5 shrink-0 rounded-full border-2 border-periwinkle" aria-hidden />
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <p className="font-bold">Add your birth time to unlock your rising sign</p>
@@ -142,16 +147,32 @@ function Locus({ profile, chart, timeNote, system, astrologer }: { profile: Prof
   );
 }
 
-function BigThreeRow({ dot, title, sa, line, children }: { dot: string; title: string; sa?: string; line: string; children: React.ReactNode }) {
+function BigThreeRow({
+  dot,
+  title,
+  sa,
+  line,
+  planet,
+  sign,
+  children,
+}: {
+  dot: string;
+  title: string;
+  sa?: string;
+  line: string;
+  planet?: "Sun" | "Moon";
+  sign: number;
+  children: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const id = `why-${title.split(" ")[0].toLowerCase()}`;
   return (
-    <li className="rounded-[18px] bg-surface px-3.5 py-3">
+    <li className="rounded-[18px] border border-outline bg-surface px-3.5 py-3 shadow-glow">
       <div className="flex items-center gap-3">
         <span className={`size-3.5 shrink-0 rounded-full ${dot}`} aria-hidden />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <p className="font-bold">
-            {title}
+            {planet && <Glyph planet={planet} />} {title} <Glyph sign={sign} />
             {sa && <span className="font-normal text-muted"> · {sa}</span>}
           </p>
           <p className="text-[15px] leading-snug text-muted">{line}</p>
@@ -301,5 +322,19 @@ function StoryCard({ chart, system }: { chart: NatalChart; system: ZodiacSystem 
         )}
       </ol>
     </section>
+  );
+}
+
+/** A scatter of faint stars behind the chart wheel. */
+function StarDust() {
+  const stars = [
+    [8, 12], [22, 6], [40, 14], [62, 8], [80, 15], [93, 6], [5, 40], [95, 38], [10, 70], [90, 72], [18, 92], [36, 96], [70, 94], [86, 88],
+  ];
+  return (
+    <svg className="pointer-events-none absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+      {stars.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r={i % 3 ? 0.35 : 0.6} fill="var(--gold-soft)" fillOpacity={0.7} />
+      ))}
+    </svg>
   );
 }

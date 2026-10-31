@@ -24,6 +24,12 @@ const moonLongitude = (at: Date, system: ZodiacSystem) => {
   return system === "western" ? norm360(sid + lahiriAyanamsa(at)) : sid;
 };
 
+/** Sun and Moon longitudes right now, in the chosen zodiac (for drawing today's sky). */
+export function skyNow(at: Date, system: ZodiacSystem) {
+  const shift = system === "western" ? lahiriAyanamsa(at) : 0;
+  return { sun: norm360(siderealLongitude("Sun", at) + shift), moon: norm360(siderealLongitude("Moon", at) + shift), elongation: MoonPhase(at) };
+}
+
 /** Where the Moon is right now, in the chosen zodiac. The nakshatra is always sidereal. */
 export function moonNow(at: Date, system: ZodiacSystem) {
   const lon = moonLongitude(at, system);

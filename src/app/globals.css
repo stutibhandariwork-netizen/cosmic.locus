@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 /*
- * Cosmic Locus design tokens (from the design handoff's tokens.css).
- * Light = "Peach Sunrise", dark = "Midnight Zodiac" (Your Locus).
- * Pastels are backgrounds only; reading text is always --text (cocoa, or cream in dark).
+ * Cosmic Locus design tokens: "sunrise meets the night sky".
+ * Warm cream and peach grounds; indigo and gold as the celestial accents.
+ * Pastels are backgrounds only; reading text is cocoa on light grounds, cream on indigo.
  */
 :root {
   --cream: #fff6ec;
@@ -23,6 +23,13 @@
   --night-ink: #1e1530;
   --night-card: #2a2040;
   --night-line: #5a4a80;
+  --indigo: #2e2a6b; /* cream on indigo 12:1; gold on indigo 5.5:1 */
+  --indigo-deep: #1d1a4a;
+  --indigo-line: #4b4790;
+  --indigo-soft: #ebe9f7;
+  --gold: #c8a24d;
+  --gold-soft: #f5e8c4;
+  --gold-deep: #8a6a1f; /* gold for small text and lines on cream: 4.6:1 */
 
   --bg: var(--cream);
   --surface: var(--white);
@@ -30,13 +37,17 @@
   --text: var(--cocoa);
   --text-muted: #5e4335;
   --label: var(--rust);
-  --outline: var(--cocoa);
-  --line: color-mix(in srgb, var(--cocoa) 22%, transparent);
-  --btn-bg: var(--cocoa);
+  /* Soft hairlines for cards; stronger lines where a control needs to be seen (3:1). */
+  --outline: color-mix(in srgb, var(--cocoa) 18%, transparent);
+  --field-line: color-mix(in srgb, var(--cocoa) 62%, var(--white));
+  --line: color-mix(in srgb, var(--cocoa) 14%, transparent);
+  --btn-bg: var(--indigo);
   --btn-text: var(--cream);
-  --tab-active: var(--rust);
-  --tab-line: var(--cocoa);
-  --focus: var(--rust);
+  --tab-active: var(--indigo);
+  --tab-line: color-mix(in srgb, var(--indigo) 18%, transparent);
+  --focus: var(--indigo);
+  --heading: var(--indigo);
+  --glow: 0 10px 30px -12px color-mix(in srgb, var(--indigo) 35%, transparent), 0 2px 6px -2px color-mix(in srgb, var(--cocoa) 12%, transparent);
   --accent-soft: var(--butter);
   --good: var(--olive);
   --warn: var(--rust);
@@ -56,6 +67,8 @@
   --btn-text: var(--night-ink);
   --tab-active: var(--blush);
   --tab-line: var(--night-line);
+  --field-line: var(--lilac);
+  --heading: var(--cream);
   --focus: var(--blush);
   --accent-soft: #3a2f58;
   --good: #c8d49a;
@@ -92,6 +105,16 @@
   --color-night: var(--night-ink);
   --color-night-card: var(--night-card);
   --color-night-line: var(--night-line);
+  --color-indigo: var(--indigo);
+  --color-indigo-deep: var(--indigo-deep);
+  --color-indigo-line: var(--indigo-line);
+  --color-indigo-soft: var(--indigo-soft);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-deep: var(--gold-deep);
+  --color-field: var(--field-line);
+  --color-heading: var(--heading);
+  --shadow-glow: var(--glow);
   --font-sans: var(--font-body), system-ui, sans-serif;
   --font-display: var(--font-display), Georgia, serif;
 }
@@ -117,7 +140,7 @@ body {
 @layer components {
   /* ReadingCard */
   .card {
-    @apply flex flex-col gap-2.5 rounded-3xl border-2 border-outline bg-surface p-5;
+    @apply flex flex-col gap-2.5 rounded-3xl border border-outline bg-surface p-5 shadow-glow;
   }
   .eyebrow {
     @apply text-[13px] font-bold tracking-[0.14em] text-label uppercase;
@@ -126,10 +149,10 @@ body {
     @apply font-display text-[28px] leading-[1.1] font-semibold;
   }
   .title {
-    @apply font-display text-[32px] leading-[1.1] font-semibold;
+    @apply font-display text-[32px] leading-[1.1] font-semibold text-heading;
   }
   .h2 {
-    @apply font-display text-[22px] leading-tight font-semibold;
+    @apply font-display text-[22px] leading-tight font-semibold text-heading;
   }
   /* PrimaryButton / SecondaryButton */
   .btn {
@@ -139,14 +162,14 @@ body {
     @apply min-h-[54px] w-full text-[17px];
   }
   .btn-ghost {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-outline bg-surface px-5 text-base font-bold text-ink transition hover:bg-surface-2;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-[1.5px] border-field bg-surface px-5 text-base font-bold text-ink transition hover:bg-surface-2;
   }
   /* TextField */
   .field {
-    @apply block min-h-12 w-full rounded-[14px] border-2 border-outline bg-surface px-3.5 py-2 text-[17px] text-ink placeholder:text-muted disabled:opacity-50;
+    @apply block min-h-12 w-full rounded-[14px] border-[1.5px] border-field bg-surface px-3.5 py-2 text-[17px] text-ink placeholder:text-muted disabled:opacity-50;
   }
   .field[aria-invalid="true"] {
-    @apply border-rust;
+    @apply border-2 border-rust;
   }
   .label {
     @apply mb-1.5 block text-[15px] font-bold text-ink;
@@ -155,11 +178,11 @@ body {
     @apply mt-1.5 text-[13px] text-muted;
   }
   .chip {
-    @apply inline-flex items-center rounded-full border-2 border-outline bg-surface px-2.5 py-0.5 text-[13px] font-bold text-ink;
+    @apply inline-flex items-center rounded-full border border-outline bg-surface px-2.5 py-0.5 text-[13px] font-bold text-ink;
   }
   /* AreaTile */
   .tile {
-    @apply flex min-h-24 flex-col gap-1 rounded-[18px] border-2 border-cocoa p-3 text-cocoa;
+    @apply flex min-h-24 flex-col gap-1 rounded-[18px] border border-outline p-3 text-cocoa shadow-glow;
   }
   .link {
     @apply font-bold text-label underline decoration-2 underline-offset-4;
@@ -184,14 +207,6 @@ body {
   text-transform: none;
 }
 
-/* Patterns: decoration zones only, never behind text. */
-.pattern-checker {
-  background: repeating-conic-gradient(var(--cocoa) 0 25%, var(--peach) 0 50%) 0 0 / 16px 16px;
-}
-.pattern-scallop-edge {
-  height: 14px;
-  background: radial-gradient(circle at 10px 0, var(--peach) 10px, transparent 10.5px) 0 0 / 20px 14px repeat-x;
-}
 
 /* Hero motion: the sun wakes up once, stars twinkle. */
 @keyframes sun-wake {

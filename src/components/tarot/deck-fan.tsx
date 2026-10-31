@@ -11,12 +11,12 @@ export function DeckFan({
   positions,
   prompt,
   onPull,
-  variant = "star",
+  variant = "sun",
 }: {
   positions: number[];
   prompt: string;
   onPull: (position: number) => void;
-  variant?: "star" | "checker";
+  variant?: "sun" | "moon";
 }) {
   const [selected, setSelected] = useState<number | null>(null);
   const [fanned, setFanned] = useState(false);
@@ -52,7 +52,7 @@ export function DeckFan({
                 }}
               >
                 <span className={`block transition-transform duration-200 ${on ? "-translate-y-7" : "hover:-translate-y-2"}`}>
-                  <CardBack variant={variant} className={`w-[74px] ${on ? "shadow-[4px_4px_0_var(--lilac)]" : ""}`} />
+                  <CardBack variant={variant} className={`w-[74px] ${on ? "shadow-glow" : ""}`} />
                 </span>
               </button>
             );

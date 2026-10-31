@@ -14,11 +14,17 @@ export function ReadingCard({ eyebrow, headline, children, action, className = "
   );
 }
 
-export const AREA_FILL = { love: "bg-blush", work: "bg-periwinkle", selfcare: "bg-lilac", money: "bg-butter" } as const;
+/** Life-area tile colours: peach for love, indigo for career, gold for mind and body. */
+export const AREA_FILL = {
+  love: "bg-gradient-to-br from-peach to-[#fde3cf]",
+  work: "bg-gradient-to-br from-indigo to-indigo-deep text-cream",
+  selfcare: "bg-gradient-to-br from-gold-soft to-[#fbf0d6]",
+  money: "bg-gold-soft",
+} as const;
 
 export function AreaTile({ href, title, line, area, planet }: { href: string; title: string; line: string; area: keyof typeof AREA_FILL; planet: Graha }) {
   return (
-    <Link href={href} className={`tile ${AREA_FILL[area]} hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--cocoa)] transition`}>
+    <Link href={href} className={`tile ${AREA_FILL[area]} hover:-translate-y-0.5 hover:shadow-lg transition`}>
       <span className="flex items-baseline justify-between gap-1 font-display text-lg leading-tight font-semibold">
         {title}
         <Glyph planet={planet} className="text-base" />
@@ -49,7 +55,7 @@ export function Segmented<T extends string>({
     <div
       role="group"
       aria-label={label}
-      className={`${compact ? "flex" : "grid gap-1"} rounded-full border-2 border-outline bg-surface p-[2px] ${className}`}
+      className={`${compact ? "flex" : "grid gap-1"} rounded-full border border-outline bg-surface p-[2px] ${className}`}
       style={compact ? undefined : { gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
     >
       {options.map((o) => (
@@ -71,7 +77,7 @@ export function StarProgress({ step, of }: { step: number; of: number }) {
   return (
     <div className="flex gap-1.5" role="img" aria-label={`Step ${step} of ${of}`}>
       {Array.from({ length: of }, (_, i) => (
-        <Star8 key={i} size={22} fill={i < step ? "var(--ochre)" : "none"} strokeWidth={1} />
+        <Star8 key={i} size={22} fill={i < step ? "var(--gold)" : "none"} stroke="var(--indigo)" strokeWidth={1} />
       ))}
     </div>
   );
@@ -92,7 +98,7 @@ export function PageHeader({ title, sub, right }: { title: string; sub?: string;
 /** A row that links to another page, for secondary destinations. */
 export function LinkRow({ href, title, sub }: { href: string; title: string; sub: string }) {
   return (
-    <Link href={href} className="flex min-h-14 items-center justify-between gap-3 rounded-[18px] border-2 border-outline bg-surface px-4 py-3 hover:bg-surface-2">
+    <Link href={href} className="flex min-h-14 items-center justify-between gap-3 rounded-[18px] border border-outline bg-surface px-4 py-3 hover:bg-surface-2">
       <span className="flex min-w-0 flex-col">
         <span className="font-bold">{title}</span>
         <span className="text-[15px] text-muted">{sub}</span>
@@ -110,7 +116,7 @@ export function NextStep({ href, label, onClick }: { href: string; label: string
     <Link
       href={href}
       onClick={onClick}
-      className="mt-1 flex min-h-12 items-center justify-between gap-3 rounded-full border-2 border-outline bg-surface px-4 py-2 text-left hover:bg-surface-2"
+      className="mt-1 flex min-h-12 items-center justify-between gap-3 rounded-full border border-outline bg-surface px-4 py-2 text-left hover:bg-surface-2"
     >
       <span className="flex min-w-0 flex-col leading-tight">
         <span className="text-[13px] font-bold tracking-[0.14em] text-label uppercase">Next</span>
@@ -127,7 +133,7 @@ export function NextStep({ href, label, onClick }: { href: string; label: string
 export function RitualHeading({ n, title, done }: { n: number; title: string; done: boolean }) {
   return (
     <h2 className="flex items-center gap-2 px-1 font-display text-xl font-semibold">
-      <Star8 size={22} fill={done ? "var(--ochre)" : "none"} strokeWidth={1} />
+      <Star8 size={22} fill={done ? "var(--gold)" : "none"} stroke="var(--indigo)" strokeWidth={1} />
       <span>
         {n} · {title}
       </span>

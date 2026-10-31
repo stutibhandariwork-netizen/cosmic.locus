@@ -22,15 +22,9 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-// Sets the dark theme before first paint on pages that use it, so there is no flash.
-const themeScript = `if(/\\/locus(\\/|$)/.test(location.pathname))document.documentElement.dataset.theme="dark"`;
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
+    <html lang="en">
       <body className={`${display.variable} ${body.variable} min-h-dvh`}>
         <TopBar />
         <main className="mx-auto w-full max-w-[480px] px-4 pt-6 pb-8">{children}</main>

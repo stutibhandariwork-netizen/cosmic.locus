@@ -1,7 +1,7 @@
 {
   "name": "Cosmic Locus",
   "short_name": "Cosmic Locus",
-  "description": "Your sky, sunny side up. Daily readings, your birth chart and tarot.",
+  "description": "Your sky, read for you every day: daily readings, your birth chart and tarot.",
   "start_url": "/cosmic.locus/",
   "scope": "/cosmic.locus/",
   "display": "standalone",

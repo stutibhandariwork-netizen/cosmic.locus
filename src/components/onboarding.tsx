@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Sparkle, Star8, SunFace } from "@/components/art";
+import { DawnSky } from "@/components/sky-art";
 import { ZodiacWheel } from "@/components/astrology/wheel";
 import { ProfileForm } from "@/components/profile-form";
 import { CardFace } from "@/components/tarot/card-back";
@@ -52,24 +52,19 @@ export function Onboarding() {
   }
 
   return (
-    <div className="-mx-4 -mt-6 -mb-8 flex min-h-dvh flex-col bg-periwinkle">
+    <div className="-mx-4 -mt-6 -mb-8 flex min-h-dvh flex-col bg-gradient-to-b from-indigo-deep via-indigo to-[#f3b892]">
       <div className={`relative shrink-0 overflow-hidden ${step === "intro" ? "h-[150px]" : "h-[196px]"}`}>
-        <Star8 size={22} fill="var(--cream)" className="twinkle absolute" style={{ left: 36, top: 40 }} />
-        <Sparkle size={16} fill="var(--cream)" className="twinkle twinkle-2 absolute" style={{ right: 44, top: 64 }} />
-        <Sparkle size={12} fill="var(--butter)" className="twinkle twinkle-3 absolute" style={{ right: 90, top: 28 }} />
-        <div className="sun-wake absolute left-1/2 -ml-[100px]" style={{ bottom: -110 }}>
-          <SunFace size={200} mood="rising" face="var(--peach)" rays="var(--butter)" label="A sun rising" />
-        </div>
+        <DawnSky height={step === "intro" ? 150 : 196} />
       </div>
 
-      <div className="relative -mt-0.5 flex flex-1 flex-col gap-3.5 rounded-t-[32px] border-t-2 border-cocoa bg-cream px-5 pt-6 pb-6">
+      <div className="relative -mt-0.5 flex flex-1 flex-col gap-3.5 rounded-t-[32px] bg-cream px-5 pt-6 pb-6 shadow-[0_-12px_30px_-10px_rgba(29,26,74,0.45)]">
         {step === "intro" && (
           <>
             <h1 className="title">{INTRO.promise}</h1>
             <p>{INTRO.sub}</p>
             <div className="grid grid-cols-[88px_1fr] items-center gap-3" aria-hidden>
-              <CardFace card={DECK[17]} className="w-[88px] -rotate-3 shadow-[4px_4px_0_var(--lilac)]" />
-              <div className="rounded-full bg-night p-1.5">
+              <CardFace card={DECK[17]} className="w-[88px] -rotate-3 shadow-glow" />
+              <div className="rounded-full bg-indigo-deep p-1.5 shadow-glow">
                 <ZodiacWheel three={SAMPLE_THREE} className="max-w-[170px]" />
               </div>
             </div>
@@ -120,7 +115,7 @@ export function Onboarding() {
               {(["vedic", "western"] as const).map((id) => {
                 const signs = charts[id];
                 return (
-                  <label key={id} className={`flex cursor-pointer gap-3 rounded-3xl border-2 border-cocoa p-4 ${system === id ? "bg-butter" : "bg-white"}`}>
+                  <label key={id} className={`flex cursor-pointer gap-3 rounded-3xl border p-4 shadow-glow ${system === id ? "border-indigo bg-indigo-soft" : "border-outline bg-white"}`}>
                     <input type="radio" name="system" value={id} checked={system === id} onChange={() => setSystem(id)} className="mt-1 size-[22px] shrink-0 accent-[var(--rust)]" />
                     <span className="flex flex-col gap-1">
                       <span className="font-display text-[22px] leading-tight font-semibold">{SYSTEM[id].title}</span>
@@ -158,13 +153,13 @@ export function Onboarding() {
 /** Full-screen moment after onboarding: the birth chart wheel draws itself. */
 function Reveal({ name, three, onDone }: { name: string; three: ReturnType<typeof bigThree>; onDone: () => void }) {
   return (
-    <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 overflow-y-auto bg-night px-6 py-10 text-cream" role="dialog" aria-modal="true" aria-labelledby="reveal-title">
+    <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 overflow-y-auto bg-gradient-to-b from-indigo to-indigo-deep px-6 py-10 text-cream" role="dialog" aria-modal="true" aria-labelledby="reveal-title">
       <ZodiacWheel three={three} draw />
       <div className="flex max-w-sm flex-col items-center gap-2 text-center">
         <h1 id="reveal-title" className="font-display text-[28px] leading-tight font-semibold">
           {REVEAL.line(name)}
         </h1>
-        <p className="text-[15px] text-lilac">
+        <p className="text-[15px] text-gold-soft">
           Sun in {three.sun.signName} <Glyph sign={three.sun.sign} /> · Moon in {three.moon.signName} <Glyph sign={three.moon.sign} />
           {three.rising && (
             <>
@@ -173,9 +168,9 @@ function Reveal({ name, three, onDone }: { name: string; three: ReturnType<typeo
             </>
           )}
         </p>
-        <p className="text-[13px] text-lilac">{REVEAL.sub}</p>
+        <p className="text-[13px] text-gold-soft">{REVEAL.sub}</p>
       </div>
-      <button className="btn btn-wide max-w-sm bg-blush text-night" onClick={onDone} autoFocus>
+      <button className="btn btn-wide max-w-sm bg-gold text-indigo-deep" onClick={onDone} autoFocus>
         {REVEAL.cta}
       </button>
     </div>

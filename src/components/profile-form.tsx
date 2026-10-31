@@ -196,7 +196,7 @@ function PlacePicker({ value, onChange, invalid = false }: { value: Profile["pla
         }}
       />
       {open && options.length > 0 && (
-        <ul id={listId} role="listbox" className="absolute z-30 mt-1 max-h-72 w-full overflow-auto rounded-[14px] border-2 border-outline bg-surface p-1 shadow-[4px_4px_0_var(--lilac)]">
+        <ul id={listId} role="listbox" className="absolute z-30 mt-1 max-h-72 w-full overflow-auto rounded-[14px] border border-outline bg-surface p-1 shadow-glow">
           {options.map((o, i) => (
             <li
               key={o.label + i}

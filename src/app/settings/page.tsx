@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { LogoArch } from "@/components/art";
+import { LogoMark } from "@/components/sky-art";
 import { Loading } from "@/components/gate";
 import { ProfileForm } from "@/components/profile-form";
 import { PageHeader, Segmented } from "@/components/ui";
@@ -133,8 +133,8 @@ export default function SettingsPage() {
       </section>
 
       <section className="flex flex-col items-center gap-2 pt-4 text-center">
-        <LogoArch size={64} />
-        <p className="mt-1 font-display text-[15px] font-semibold tracking-[0.24em]">COSMIC LOCUS</p>
+        <LogoMark size={72} />
+        <p className="mt-1 font-display text-[15px] font-semibold tracking-[0.24em] text-indigo">COSMIC LOCUS</p>
         <p className="font-display italic">Your sky, sunny side up.</p>
         <p className="text-[15px] text-muted">
           Charts are calculated on your device with astronomy-engine: Lahiri ayanamsa, whole-sign houses, mean nodes and Vimshottari dasha for Vedic mode, the

@@ -3,7 +3,8 @@
 import { Glyph } from "@/components/glyph";
 import Link from "next/link";
 import { useEffect, useMemo, useRef } from "react";
-import { MoonPhaseIcon, Sparkle, Star8, SunFace } from "@/components/art";
+import { MoonPhaseIcon, Star8 } from "@/components/art";
+import { OrbitDivider, TodaySky } from "@/components/sky-art";
 import { Loading } from "@/components/gate";
 import { Onboarding } from "@/components/onboarding";
 import { CardOfTheDay, todaysCard } from "@/components/tarot/today-card";
@@ -16,7 +17,7 @@ import { journalPrompt } from "@/lib/journal/core";
 import { deviceTimeZone, localDay, useChart } from "@/lib/chart";
 import { NAKSHATRA_MOOD } from "@/lib/content/plain";
 import { fmtTime, ordinal } from "@/lib/format";
-import { moonNow, moonSignChange } from "@/lib/sky";
+import { moonNow, moonSignChange, skyNow } from "@/lib/sky";
 import { markRitual, useData, type Data, type Prefs, type Profile } from "@/lib/store";
 import { greetingFor, todayReading } from "@/lib/today";
 
@@ -39,7 +40,7 @@ function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; 
   const moon = useMemo(() => moonNow(now, prefs.system), [now, prefs.system]);
   const change = useMemo(() => moonSignChange(now, new Date(day.start.getTime() + 86_400_000), prefs.system), [now, day, prefs.system]);
   const calm = prefs.comfort;
-  const heroH = calm ? 220 : 262;
+  const sky = useMemo(() => skyNow(now, prefs.system), [now, prefs.system]);
   const dateLabel = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(now).replace(" ", " · ");
   const firstName = profile.name.split(" ")[0];
   const facts = useMemo(() => dailyFacts(chart, day.start, day.date), [chart, day]);
@@ -77,15 +78,15 @@ function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; 
 
   return (
     <div className="-mx-4 -mt-6 flex flex-col">
-      <div className="relative flex shrink-0 flex-col bg-peach px-5 pt-4" style={{ height: heroH }}>
+      <div className="relative flex shrink-0 flex-col bg-gradient-to-b from-peach via-[#fbd9b8] to-gold-soft px-5 pt-4">
         <div className="mt-2 flex items-center justify-between gap-3">
           <div className="flex min-w-0 flex-col gap-0.5">
             <p className="text-[13px] font-bold tracking-[0.14em] uppercase">{dateLabel}</p>
-            <h1 className="font-display text-[22px] leading-tight font-semibold">
+            <h1 className="font-display text-[22px] leading-tight font-semibold text-indigo">
               {greetingFor(day.hour)}, {firstName}
             </h1>
           </div>
-          <Link href="/settings/" aria-label="Settings" className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-cocoa bg-cream hover:bg-butter">
+          <Link href="/settings/" aria-label="Settings" className="grid size-11 shrink-0 place-items-center rounded-full border border-outline bg-cream/80 text-indigo hover:bg-cream">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
               <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
               <circle cx="16" cy="7" r="2" />
@@ -93,31 +94,18 @@ function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; 
             </svg>
           </Link>
         </div>
-        <div className="relative flex flex-1 items-end justify-center">
-          {!calm && (
-            <>
-              <Star8 size={26} fill="var(--cream)" className="twinkle absolute" style={{ left: 34, bottom: 70 }} />
-              <Star8 size={20} className="twinkle twinkle-2 absolute" style={{ right: 40, bottom: 110 }} />
-              <Sparkle size={14} className="twinkle twinkle-3 absolute" style={{ right: 70, bottom: 34 }} />
-              <Sparkle size={12} className="twinkle twinkle-2 absolute" style={{ left: 80, bottom: 140 }} />
-            </>
-          )}
-          <div
-            className="flex w-[170px] items-center justify-center overflow-hidden rounded-t-[85px] border-2 border-b-0 border-cocoa bg-butter"
-            style={{ height: heroH - 92 }}
-          >
-            <SunFace size={150} face="var(--cream)" className="sun-wake" label={`Today's sun is smiling`} />
-          </div>
+        <div className="mt-1 -mx-2">
+          <TodaySky sunLongitude={sky.sun} moonLongitude={sky.moon} elongation={sky.elongation} sign={reading.base.sign} calm={calm} />
         </div>
       </div>
-      <div className="pattern-scallop-edge shrink-0" aria-hidden />
+      <OrbitDivider className="mt-1" />
 
       <div className="flex flex-col gap-3.5 px-4 pt-1.5">
         <section className="flex items-center justify-between gap-3 px-1" aria-label="Today's ritual">
           <p className="font-display text-lg font-semibold">Your ritual today</p>
           <p className="flex items-center gap-1" role="img" aria-label={`${count} of 4 done`}>
             {STEPS.map((k) => (
-              <Star8 key={k} size={18} fill={done[k] ? "var(--ochre)" : "none"} strokeWidth={1} />
+              <Star8 key={k} size={18} fill={done[k] ? "var(--gold)" : "none"} stroke="var(--indigo)" strokeWidth={1} />
             ))}
             <span className="ml-1 text-[13px] font-bold">{count}/4</span>
           </p>
@@ -159,7 +147,7 @@ function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; 
           <AreaTile href="/day/#mind-body" area="selfcare" title="Mind & body" planet="Moon" line={reading.selfcare.line} />
         </div>
 
-        <div className="flex items-center gap-3 rounded-[18px] border-2 border-outline bg-surface px-3.5 py-2.5">
+        <div className="flex items-center gap-3 rounded-[18px] border border-outline bg-surface px-3.5 py-2.5">
           <MoonPhaseIcon elongation={moon.elongation} />
           <div className="flex flex-col text-[15px] leading-snug">
             <p>
@@ -213,13 +201,13 @@ function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; 
         </div>
 
         {count === 4 && (
-          <section className="card items-center bg-butter text-center text-cocoa" role="status">
+          <section className="card items-center bg-gradient-to-b from-indigo to-indigo-deep text-center text-cream" role="status">
             <p className="flex gap-1" aria-hidden>
               <Star8 size={20} />
               <Star8 size={26} />
               <Star8 size={20} />
             </p>
-            <p className="headline">You&apos;re all set for today.</p>
+            <p className="headline text-gold-soft">You&apos;re all set for today.</p>
             <p>See you tomorrow, {firstName}.</p>
           </section>
         )}

@@ -121,7 +121,7 @@ export function LifeChapters({ chart, astrologer }: { chart: NatalChart; astrolo
           const pd = ad?.pratyantars.find((x) => x.start <= now && now < x.end);
           const progress = isNow ? (Date.parse(now) - Date.parse(m.start)) / (Date.parse(m.end) - Date.parse(m.start)) : 0;
           return (
-            <li key={m.start} className={`card gap-1.5 ${isNow ? "border-rust bg-butter text-cocoa" : ""} ${isPast ? "opacity-75" : ""}`}>
+            <li key={m.start} className={`card gap-1.5 ${isNow ? "border-gold bg-gradient-to-b from-gold-soft to-[#fbf3dc] text-cocoa" : ""} ${isPast ? "opacity-75" : ""}`}>
               <p className={`text-[13px] font-bold tracking-[0.14em] uppercase ${isNow ? "text-rust" : "text-label"}`}>
                 {isNow ? "You are here" : isPast ? "Before" : "Coming up"} · {new Date(start).getUTCFullYear()}–{new Date(m.end).getUTCFullYear()}
               </p>
@@ -224,7 +224,7 @@ export function SaturnCycles({ chart }: { chart: NatalChart }) {
           const isPast = c.end <= now;
           const t = SATURN_PLAIN[c.kind];
           return (
-            <li key={c.start} className={`card gap-1.5 ${isNow ? "border-rust bg-butter text-cocoa" : ""} ${isPast ? "opacity-75" : ""}`}>
+            <li key={c.start} className={`card gap-1.5 ${isNow ? "border-gold bg-gradient-to-b from-gold-soft to-[#fbf3dc] text-cocoa" : ""} ${isPast ? "opacity-75" : ""}`}>
               <p className={`text-[13px] font-bold tracking-[0.14em] uppercase ${isNow ? "text-rust" : "text-label"}`}>
                 {isNow ? "Now" : isPast ? "Behind you" : "Ahead"} · {new Date(c.start).getUTCFullYear()}–{new Date(c.end).getUTCFullYear()}
               </p>

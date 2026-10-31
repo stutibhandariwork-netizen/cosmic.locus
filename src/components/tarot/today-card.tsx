@@ -20,7 +20,7 @@ export function todaysCard(data: Data) {
 }
 
 /** Turns a just-pulled card face up once; a card already seen this visit stays face up. */
-export function TurnedCard({ card, seenKey, size = "sm", back = "star", className = "" }: { card: TarotCard; seenKey?: string; size?: "sm" | "lg"; back?: "star" | "checker"; className?: string }) {
+export function TurnedCard({ card, seenKey, size = "sm", back = "sun", className = "" }: { card: TarotCard; seenKey?: string; size?: "sm" | "lg"; back?: "sun" | "moon"; className?: string }) {
   const [up, setUp] = useState(false);
   const [instant, setInstant] = useState(false);
   useEffect(() => {
@@ -90,7 +90,7 @@ export function CardOfTheDay({ data, compact = false, onPulled }: { data: Data; 
   }
   return (
     <div className="flex flex-col gap-4">
-      <TurnedCard card={card} size="lg" seenKey={`day:${session.id}`} className="w-[180px] self-center rounded-[14px] shadow-[6px_6px_0_var(--lilac)]" />
+      <TurnedCard card={card} size="lg" seenKey={`day:${session.id}`} className="w-[180px] self-center rounded-[14px] shadow-glow" />
       <ReadingCard eyebrow="Card of the day" headline={v.headline}>
         <p>{v.line}</p>
         <p className="text-[15px] text-muted">Your card stays with you all day. Come back tomorrow to pull a new one.</p>

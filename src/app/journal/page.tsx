@@ -102,14 +102,14 @@ function Journal() {
 
       <form onSubmit={save} className="card flex flex-col gap-4">
         {link ? (
-          <div className="rounded-[18px] border-2 border-outline bg-lilac p-4 text-cocoa">
+          <div className="rounded-[18px] border border-outline bg-indigo-soft p-4 text-cocoa">
             <p className="text-[13px] font-bold tracking-[0.14em] uppercase">Tarot</p>
             <p className="font-bold">{link.title}</p>
             <p className="text-[15px]">{link.summary}</p>
           </div>
         ) : (
           prompt && (
-            <div className="rounded-[18px] border-2 border-outline bg-butter p-4 text-cocoa">
+            <div className="rounded-[18px] border border-outline bg-gold-soft p-4 text-cocoa">
               <p className="text-[13px] font-bold tracking-[0.14em] uppercase">Today&apos;s prompt</p>
               <p className="mt-1 font-display text-xl leading-snug font-semibold">{prompt}</p>
               <label className="mt-2 flex min-h-11 items-center gap-2.5 text-[15px]">
@@ -147,7 +147,7 @@ function Journal() {
           <ol className="relative flex flex-col gap-3 border-l-2 border-line pl-4">
             {entries.map((e) => (
               <li key={e.id} className="relative">
-                <span aria-hidden className="absolute top-5 -left-[22px] size-3 rounded-full border-2 border-outline bg-ochre" />
+                <span aria-hidden className="absolute top-5 -left-[22px] size-3 rounded-full border border-gold-deep bg-gold" />
                 <article className="card gap-2 p-4">
                   <div className="flex items-center justify-between text-[13px] text-muted">
                     <span className="chip">{e.link ? "Tarot" : e.prompt ? "Prompt" : "Free writing"}</span>

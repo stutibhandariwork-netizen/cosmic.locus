@@ -27,7 +27,7 @@ export default function TarotPage() {
         value={mode}
         onChange={setMode}
         options={[
-          { id: "day", label: "Today’s card" },
+          { id: "day", label: "Today" },
           { id: "three", label: "3 cards" },
           { id: "yesno", label: "Yes / No" },
         ]}
@@ -139,12 +139,12 @@ function YesNo() {
       {question.trim() && <p className="self-stretch px-1 font-display text-xl leading-snug font-semibold">“{question.trim()}”</p>}
       {!card ? (
         <div className="self-stretch">
-          <DeckFan positions={allPositions} variant="checker" prompt="Hold your question in mind and pull one card." onPull={setPick} />
+          <DeckFan positions={allPositions} variant="moon" prompt="Hold your question in mind and pull one card." onPull={setPick} />
         </div>
       ) : (
         <>
-          <TurnedCard card={card} back="checker" className="w-[170px] rounded-2xl shadow-[6px_6px_0_var(--blush)]" />
-          <div className="flex flex-col gap-1 self-stretch rounded-[20px] border-2 border-outline bg-surface px-4 py-3.5" aria-live="polite">
+          <TurnedCard card={card} back="moon" className="w-[170px] rounded-2xl shadow-glow" />
+          <div className="flex flex-col gap-1 self-stretch rounded-[20px] border border-outline bg-surface px-4 py-3.5" aria-live="polite">
             <p className="font-display text-2xl font-semibold">{YES_NO_ANSWER[card.nature]}</p>
             <p>
               {card.name}: {voiceOf(card).line}

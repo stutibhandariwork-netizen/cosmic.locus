@@ -84,8 +84,8 @@ export function northIndianChartSvg(chart: NatalChart, opts: ChartSvgOptions = {
   }
 
   const title = opts.title ? `<title>${esc(opts.title)}</title>` : "";
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" fill="none" stroke="currentColor">${title}
-<style>text{fill:currentColor;stroke:none;font-family:system-ui,sans-serif;text-anchor:middle;dominant-baseline:middle}.sign{font-size:11px;opacity:.55}.pl{font-size:12px;font-weight:600}</style>
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" fill="none" stroke="currentColor" class="ni-chart">${title}
+<style>.ni-chart text{fill:currentColor;stroke:none;font-family:system-ui,sans-serif;text-anchor:middle;dominant-baseline:middle}.ni-chart .sign{font-size:11px;opacity:.55}.ni-chart .pl{font-size:12px;font-weight:600}</style>
 <rect x="1" y="1" width="398" height="398" stroke-width="2"/>
 <path d="M1 1L399 399M399 1L1 399M200 1L399 200L200 399L1 200Z" stroke-width="1.5"/>
 ${body.join("\n")}

@@ -60,7 +60,7 @@ function ReadingView({ session }: { session: TarotSession }) {
               {c ? (
                 <FlipCard seenKey={`${session.id}:${c.deckPosition}`} card={DECK[c.cardIndex]} reversed={c.reversed} size={many ? "sm" : "md"} />
               ) : (
-                <div className={`${many ? "w-20" : "w-36 sm:w-44"} grid aspect-[100/172] place-items-center rounded-[7%] border-2 border-dashed border-line text-[13px] text-muted`}>
+                <div className={`${many ? "w-20" : "w-36 sm:w-44"} grid aspect-[100/172] place-items-center rounded-[7%] border border-dashed border-field text-[13px] text-muted`}>
                   {i + 1}
                 </div>
               )}
