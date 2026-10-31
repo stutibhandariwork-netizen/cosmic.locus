@@ -142,6 +142,11 @@ function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; 
               <Glyph planet="Moon" /> {reading.sky}.
             </p>
             <p>{reading.body}</p>
+            {reading.also && (
+              <p className="text-[15px]">
+                <Glyph planet={reading.also.planet} /> {reading.also.text}
+              </p>
+            )}
             <p className="text-[13px] text-muted">
               Moon in {reading.moonSign} <Glyph sign={reading.moonSignIndex} /> · {ordinal(reading.house)} house from your {reading.base.body} ({reading.base.signName})
             </p>
@@ -149,9 +154,9 @@ function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; 
         </div>
 
         <div className="grid grid-cols-3 gap-2.5">
-          <AreaTile href="/day/#love" area="love" title="Love" line={reading.love.line} />
-          <AreaTile href="/day/#work" area="work" title="Work" line={reading.work.line} />
-          <AreaTile href="/day/#self-care" area="selfcare" title="Self-care" line={reading.selfcare.line} />
+          <AreaTile href="/day/#love" area="love" title="Love" planet="Venus" line={reading.love.line} />
+          <AreaTile href="/day/#career" area="work" title="Career" planet="Saturn" line={reading.work.line} />
+          <AreaTile href="/day/#mind-body" area="selfcare" title="Mind & body" planet="Moon" line={reading.selfcare.line} />
         </div>
 
         <div className="flex items-center gap-3 rounded-[18px] border-2 border-outline bg-surface px-3.5 py-2.5">

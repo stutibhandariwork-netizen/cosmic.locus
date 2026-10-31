@@ -1,5 +1,7 @@
 import Link from "next/link";
+import type { Graha } from "@/lib/engine";
 import { Star8 } from "./art";
+import { Glyph } from "./glyph";
 
 export function ReadingCard({ eyebrow, headline, children, action, className = "" }: { eyebrow: React.ReactNode; headline: React.ReactNode; children?: React.ReactNode; action?: React.ReactNode; className?: string }) {
   return (
@@ -14,10 +16,13 @@ export function ReadingCard({ eyebrow, headline, children, action, className = "
 
 export const AREA_FILL = { love: "bg-blush", work: "bg-periwinkle", selfcare: "bg-lilac", money: "bg-butter" } as const;
 
-export function AreaTile({ href, title, line, area }: { href: string; title: string; line: string; area: keyof typeof AREA_FILL }) {
+export function AreaTile({ href, title, line, area, planet }: { href: string; title: string; line: string; area: keyof typeof AREA_FILL; planet: Graha }) {
   return (
     <Link href={href} className={`tile ${AREA_FILL[area]} hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--cocoa)] transition`}>
-      <span className="font-display text-lg font-semibold">{title}</span>
+      <span className="flex items-baseline justify-between gap-1 font-display text-lg leading-tight font-semibold">
+        {title}
+        <Glyph planet={planet} className="text-base" />
+      </span>
       <span className="text-sm leading-snug">{line}</span>
     </Link>
   );

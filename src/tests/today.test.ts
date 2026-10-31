@@ -49,6 +49,40 @@ describe("today's reading", () => {
   });
 });
 
+describe("daily variety", () => {
+  const dates = (from: string, n: number) =>
+    Array.from({ length: n }, (_, i) => new Date(Date.parse(`${from}T00:00:00Z`) + i * 86_400_000).toISOString().slice(0, 10));
+
+  for (const system of ["vedic", "western"] as const) {
+    it(`never repeats a headline or tile line on consecutive days (${system}, 30 days)`, () => {
+      const days = dates("2026-11-01", 30).map((d) => todayReading(profile, chart, system, day(d)));
+      for (let i = 1; i < days.length; i++) {
+        const [a, b] = [days[i - 1], days[i]];
+        expect(b.headline, `day ${i}`).not.toBe(a.headline);
+        expect(b.love.line, `love ${i}`).not.toBe(a.love.line);
+        expect(b.work.line, `career ${i}`).not.toBe(a.work.line);
+        expect(b.selfcare.line, `mind ${i}`).not.toBe(a.selfcare.line);
+        expect(b.also?.text, `also ${i}`).not.toBe(a.also?.text);
+      }
+    });
+  }
+
+  it("names a second planet: Venus, Mars or the current chapter, in turn", () => {
+    const planets = dates("2026-11-01", 3).map((d) => todayReading(profile, chart, "vedic", day(d)).also?.planet);
+    expect(new Set(planets).size).toBe(3);
+    expect(planets).toContain("Venus");
+    expect(planets).toContain("Mars");
+  });
+
+  it("has six readings and four lines per area for every Moon position", async () => {
+    const { DAILY } = await import("@/lib/content/daily");
+    for (let h = 1; h <= 12; h++) {
+      expect(DAILY[h].readings).toHaveLength(6);
+      for (const a of ["love", "work", "selfcare"] as const) expect(DAILY[h][a].lines).toHaveLength(4);
+    }
+  });
+});
+
 describe("sky helpers", () => {
   it("names moon phases", () => {
     expect([0, 45, 90, 135, 180, 225, 270, 315, 350].map(phaseName)).toEqual([
