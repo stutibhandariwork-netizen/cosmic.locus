@@ -29,18 +29,6 @@ const ICONS = {
       <path d="M12 8l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" />
     </>
   ),
-  week: (
-    <>
-      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
-      <path d="M3.5 10h17M8 3v4M16 3v4" />
-      <circle cx="12" cy="15" r="1.6" />
-    </>
-  ),
-  numbers: (
-    <>
-      <path d="M9.5 4 7.5 20M16.5 4l-2 16M4.5 9h15.5M4 15h15.5" />
-    </>
-  ),
   journal: (
     <>
       <path d="M4 19V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z" />
@@ -50,11 +38,9 @@ const ICONS = {
 };
 
 const ITEMS = [
-  { href: "/", label: "Today", icon: "today", match: ["/day", "/settings"] },
-  { href: "/locus/", label: "Locus", icon: "locus", match: [] },
-  { href: "/week/", label: "Week", icon: "week", match: [] },
+  { href: "/", label: "Today", icon: "today", match: ["/day", "/settings", "/week"] },
+  { href: "/locus/", label: "Locus", icon: "locus", match: ["/numerology"] },
   { href: "/tarot/", label: "Tarot", icon: "tarot", match: [] },
-  { href: "/numerology/", label: "Numbers", icon: "numbers", match: [] },
   { href: "/journal/", label: "Journal", icon: "journal", match: [] },
 ] as const;
 
@@ -73,10 +59,10 @@ export function BottomNav() {
   if (pathname === "/" && !data?.profile) return null;
 
   const active = (n: (typeof ITEMS)[number]) =>
-    n.href === "/" ? pathname === "/" || n.match.some((m) => pathname.startsWith(m)) : pathname.startsWith(n.href.replace(/\/$/, ""));
+    n.href === "/" ? pathname === "/" || n.match.some((m) => pathname.startsWith(m)) : pathname.startsWith(n.href.replace(/\/$/, "")) || n.match.some((m) => pathname.startsWith(m));
   return (
     <nav aria-label="Main" className={`fixed inset-x-0 bottom-0 z-20 bg-bg pb-[max(env(safe-area-inset-bottom),12px)] ${dark ? "border-t-[1.5px]" : "border-t-2"} border-[var(--tab-line)]`}>
-      <ul className="mx-auto grid max-w-[480px] grid-cols-6 px-0.5 pt-1.5">
+      <ul className="mx-auto grid max-w-[480px] grid-cols-4 px-1 pt-1.5">
         {ITEMS.map((n) => {
           const on = active(n);
           return (

@@ -50,17 +50,23 @@ export interface GoogleDocLink {
   syncedAt: string;
 }
 
+export type RitualStep = "read" | "card" | "affirmation" | "write";
+
 export interface Data {
   profile: Profile | null;
   prefs: Prefs;
   google: GoogleDocLink | null;
+  /** The "Your sky is ready" guide has been seen (shown once after onboarding). */
+  seenWelcome: boolean;
+  /** Today's ritual steps that are done, for one local date. */
+  ritual: { date: string; done: RitualStep[] };
   tarot: TarotSession[];
   journal: JournalEntry[];
 }
 
 const KEY = "grahify-demo-v1";
 export const DEFAULT_PREFS: Prefs = { system: "vedic", comfort: false };
-const EMPTY: Data = { profile: null, prefs: DEFAULT_PREFS, google: null, tarot: [], journal: [] };
+const EMPTY: Data = { profile: null, prefs: DEFAULT_PREFS, google: null, seenWelcome: false, ritual: { date: "", done: [] }, tarot: [], journal: [] };
 
 let cache: Data | null = null;
 const listeners = new Set<() => void>();
@@ -119,6 +125,13 @@ export function useData(): Data | null {
 
 /** The current data, outside React (e.g. right after an update). */
 export const snapshot = () => read();
+
+/** Marks a ritual step done for a local date (starting fresh on a new day). */
+export const markRitual = (date: string, step: RitualStep) =>
+  update((d) => {
+    const done = d.ritual.date === date ? d.ritual.done : [];
+    return done.includes(step) ? d : { ...d, ritual: { date, done: [...done, step] } };
+  });
 
 export const setPrefs = (p: Partial<Prefs>) => update((d) => ({ ...d, prefs: { ...d.prefs, ...p } }));
 

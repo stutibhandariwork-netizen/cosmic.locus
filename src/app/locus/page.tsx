@@ -7,7 +7,10 @@ import { dms } from "@/components/astrology/format";
 import { BorderlineNote, DashaTimeline, Placements, SaturnCycles, Section } from "@/components/astrology/sections";
 import { ZodiacWheel } from "@/components/astrology/wheel";
 import { WithChart } from "@/components/gate";
-import { PageHeader, Segmented } from "@/components/ui";
+import { Glyph } from "@/components/glyph";
+import { LinkRow, NextStep, PageHeader, Segmented } from "@/components/ui";
+import { STORY } from "@/lib/content/plain";
+import { lifeStory } from "@/lib/story";
 import { MOON_LINES, RISING_LINES, SUN_LINES } from "@/lib/content/signs";
 import { GRAHAS, northIndianChartSvg, SIGNS, type NatalChart } from "@/lib/engine";
 import { fmtLocal } from "@/lib/format";
@@ -50,11 +53,15 @@ function Locus({ profile, chart, timeNote, system }: { profile: Profile; chart: 
         }
       />
 
+      <StoryCard chart={chart} system={system} />
+
       <div className="py-1">
         <ZodiacWheel three={three} />
       </div>
 
-      <h2 className="h2 mt-1">Your big three</h2>
+      <h2 id="big-three" className="h2 mt-1 scroll-mt-6">
+        Your big three
+      </h2>
       <ul className="flex flex-col gap-2.5">
         <BigThreeRow dot="bg-ochre" title={`Sun · ${three.sun.signName}`} sa={sa(three.sun.sign)} line={SUN_LINES[three.sun.sign]}>
           On {born} the Sun was at {dms(three.sun.degree)} {three.sun.signName}, {zodiac}. Your Sun sign is the heart of you: what you&apos;re building and what
@@ -87,8 +94,16 @@ function Locus({ profile, chart, timeNote, system }: { profile: Profile; chart: 
         )}
       </ul>
       {vedic && <BorderlineNote chart={chart} />}
+      <NextStep href="#chapters" label="See the chapter you're in now" />
 
       <div className="mt-8 flex flex-col gap-12">
+        <div id="chapters" className="scroll-mt-6">
+          <span id="dasha" />
+          <Section eyebrow="Vimshottari dasha" title="The chapters of your life">
+            <DashaTimeline chart={chart} />
+            <NextStep href="/day/#love" label="What this means for love and career today" />
+          </Section>
+        </div>
         {vedic ? (
           <>
             <Section eyebrow="Indian style" title="Your birth chart">
@@ -110,11 +125,6 @@ function Locus({ profile, chart, timeNote, system }: { profile: Profile; chart: 
             <Section eyebrow="Combinations" title="Your special patterns">
               <YogaDetails chart={chart} />
             </Section>
-            <div id="dasha" className="scroll-mt-6">
-              <Section eyebrow="Vimshottari dasha" title="The chapters of your life">
-                <DashaTimeline chart={chart} />
-              </Section>
-            </div>
             <Section eyebrow="Saturn's rhythm" title="Big life cycles">
               <SaturnCycles chart={chart} />
             </Section>
@@ -124,6 +134,9 @@ function Locus({ profile, chart, timeNote, system }: { profile: Profile; chart: 
             <WesternPlacements chart={chart} />
           </Section>
         )}
+        <Section eyebrow="Numerology" title="Your numbers">
+          <LinkRow href="/numerology/" title="Your numbers" sub="Life path, birth number and today's personal day" />
+        </Section>
       </div>
     </div>
   );
@@ -193,5 +206,49 @@ function WesternPlacements({ chart }: { chart: NatalChart }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/** Who you are, the chapter you're in, and what's next: plain words first, the astrology alongside. */
+function StoryCard({ chart, system }: { chart: NatalChart; system: ZodiacSystem }) {
+  const story = lifeStory(chart, system);
+  const { sun, moon, rising } = story.three;
+  return (
+    <section className="card" aria-labelledby="story-title">
+      <p id="story-title" className="eyebrow">
+        {STORY.title}
+      </p>
+      <ol className="flex flex-col gap-3">
+        <li className="flex flex-col gap-0.5">
+          <p className="font-display text-xl leading-snug font-semibold">{story.who}</p>
+          <p className="text-[13px] text-muted">
+            Sun {sun.signName} <Glyph sign={sun.sign} /> · Moon {moon.signName} <Glyph sign={moon.sign} />
+            {rising && (
+              <>
+                {" "}
+                · Rising {rising.signName} <Glyph sign={rising.sign} />
+              </>
+            )}
+          </p>
+        </li>
+        {story.now && (
+          <li className="flex flex-col gap-0.5 border-t border-line pt-3">
+            <p>{story.now.line}</p>
+            <p className="text-[13px] text-muted">
+              <Glyph planet={story.now.mahadasha.lord} /> {story.now.mahadasha.lord} Mahadasha · <Glyph planet={story.now.antardasha.lord} />{" "}
+              {story.now.antardasha.lord} Antardasha
+            </p>
+          </li>
+        )}
+        {story.next && (
+          <li className="flex flex-col gap-0.5 border-t border-line pt-3">
+            <p>{story.next.line}</p>
+            <p className="text-[13px] text-muted">
+              <Glyph planet={story.next.lord} /> {story.next.lord} {story.next.isChapter ? "Mahadasha" : "Antardasha"}
+            </p>
+          </li>
+        )}
+      </ol>
+    </section>
   );
 }

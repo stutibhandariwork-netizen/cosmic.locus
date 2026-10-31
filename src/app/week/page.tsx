@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo } from "react";
 import { GLYPH } from "@/components/astrology/format";
 import { WithChart } from "@/components/gate";
@@ -34,8 +35,11 @@ function Week({ chart }: { chart: NatalChart }) {
 
   return (
     <div className="flex flex-col gap-8">
+      <Link href="/" className="link self-start py-2.5">
+        ← Today
+      </Link>
       <header className="flex flex-col gap-0.5 px-1">
-        <h1 className="title">Your week</h1>
+        <h1 className="title">This week</h1>
         <p className="font-bold">
           {fmtLocal(facts.week.start, tz).replace(/ \d{4}$/, "")} – {fmtLocal(new Date(new Date(facts.week.end).getTime() - 1).toISOString(), tz)}
         </p>

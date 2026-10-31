@@ -43,3 +43,15 @@ export const REVEAL = {
   sub: "Calculated for your exact birth time and place.",
   cta: "See what it means",
 };
+
+export const WELCOME = {
+  eyebrow: (name: string) => `Welcome, ${name}`,
+  title: "Your sky is ready.",
+  sub: "Three good places to start. Each takes a minute.",
+  steps: [
+    { title: "Meet your big three", sub: "Your Sun, Moon and rising sign, and what they say about you.", href: "/locus/#big-three" },
+    { title: "Pull your first card", sub: "Shuffle the deck and pick today's tarot card.", href: "/tarot/" },
+    { title: "See the chapter you're in", sub: "The life chapter you're in now (your dasha), and what comes next.", href: "/locus/#chapters" },
+  ],
+  today: "Take me to today",
+};

@@ -2,15 +2,21 @@
 
 import { Glyph } from "@/components/glyph";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { MoonPhaseIcon, Sparkle, Star8, SunFace } from "@/components/art";
 import { Loading } from "@/components/gate";
 import { Onboarding } from "@/components/onboarding";
-import { AreaTile, ReadingCard } from "@/components/ui";
-import { chartFor, deviceTimeZone, localDay, useChart } from "@/lib/chart";
+import { CardOfTheDay, todaysCard } from "@/components/tarot/today-card";
+import { AreaTile, LinkRow, NextStep, ReadingCard, RitualHeading } from "@/components/ui";
+import { WelcomeGuide } from "@/components/welcome";
+import { templateAffirmation } from "@/lib/affirmations";
+import { dailyFacts } from "@/lib/astrology/daily";
+import type { NatalChart } from "@/lib/engine";
+import { journalPrompt } from "@/lib/journal/core";
+import { deviceTimeZone, localDay, useChart } from "@/lib/chart";
 import { fmtTime } from "@/lib/format";
 import { moonNow, moonSignChange } from "@/lib/sky";
-import { useData, type Prefs, type Profile } from "@/lib/store";
+import { markRitual, useData, type Data, type Prefs, type Profile } from "@/lib/store";
 import { greetingFor, todayReading } from "@/lib/today";
 
 export default function Home() {
@@ -18,10 +24,13 @@ export default function Home() {
   const chart = useChart(data?.profile);
   if (!data) return <Loading />;
   if (!data.profile || !chart) return <Onboarding />;
-  return <Today profile={data.profile} chart={chart.chart} prefs={data.prefs} />;
+  if (!data.seenWelcome) return <WelcomeGuide name={data.profile.name.split(" ")[0]} />;
+  return <Today data={data} profile={data.profile} chart={chart.chart} prefs={data.prefs} />;
 }
 
-function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<typeof chartFor>["chart"]; prefs: Prefs }) {
+const STEPS = ["read", "card", "affirmation", "write"] as const;
+
+function Today({ data, profile, chart, prefs }: { data: Data; profile: Profile; chart: NatalChart; prefs: Prefs }) {
   const tz = deviceTimeZone();
   const now = useMemo(() => new Date(), []);
   const day = useMemo(() => localDay(now, tz), [now, tz]);
@@ -32,6 +41,38 @@ function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<
   const heroH = calm ? 220 : 262;
   const dateLabel = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(now).replace(" ", " · ");
   const firstName = profile.name.split(" ")[0];
+  const facts = useMemo(() => dailyFacts(chart, day.start, day.date), [chart, day]);
+  const affirmation = templateAffirmation(facts);
+
+  // Ritual progress for today: stored steps, plus what the data already shows.
+  const stored = data.ritual.date === day.date ? data.ritual.done : [];
+  const done = {
+    read: stored.includes("read"),
+    card: stored.includes("card") || todaysCard(data) !== null,
+    affirmation: stored.includes("affirmation"),
+    write: stored.includes("write") || data.journal.some((e) => e.date === day.date),
+  };
+  const count = STEPS.filter((k) => done[k]).length;
+
+  // "Read your day" is done once the reading has been on screen for a moment.
+  const readRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = readRef.current;
+    if (!el || done.read) return;
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        clearTimeout(t);
+        if (e.isIntersecting) t = setTimeout(() => markRitual(day.date, "read"), 2500);
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(el);
+    return () => {
+      clearTimeout(t);
+      io.disconnect();
+    };
+  }, [done.read, day.date]);
 
   return (
     <div className="-mx-4 -mt-6 flex flex-col">
@@ -71,21 +112,34 @@ function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<
       <div className="pattern-scallop-edge shrink-0" aria-hidden />
 
       <div className="flex flex-col gap-3.5 px-4 pt-1.5">
-        <ReadingCard
-          eyebrow={
-            <>
-              Read from your {reading.base.body} in {reading.base.signName} <Glyph sign={reading.base.sign} />
-            </>
-          }
-          headline={reading.headline}
-          action={
-            <Link href="/day/" className="btn">
-              Read deeper
-            </Link>
-          }
-        >
-          <p>{reading.body}</p>
-        </ReadingCard>
+        <section className="flex items-center justify-between gap-3 px-1" aria-label="Today's ritual">
+          <p className="font-display text-lg font-semibold">Your ritual today</p>
+          <p className="flex items-center gap-1" role="img" aria-label={`${count} of 4 done`}>
+            {STEPS.map((k) => (
+              <Star8 key={k} size={18} fill={done[k] ? "var(--ochre)" : "none"} strokeWidth={1} />
+            ))}
+            <span className="ml-1 text-[13px] font-bold">{count}/4</span>
+          </p>
+        </section>
+
+        <RitualHeading n={1} title="Read your day" done={done.read} />
+        <div ref={readRef}>
+          <ReadingCard
+            eyebrow={
+              <>
+                Read from your {reading.base.body} in {reading.base.signName} <Glyph sign={reading.base.sign} />
+              </>
+            }
+            headline={reading.headline}
+            action={
+              <Link href="/day/" className="btn" onClick={() => markRitual(day.date, "read")}>
+                Read deeper
+              </Link>
+            }
+          >
+            <p>{reading.body}</p>
+          </ReadingCard>
+        </div>
 
         <div className="grid grid-cols-3 gap-2.5">
           <AreaTile href="/day/#love" area="love" title="Love" line={reading.love.line} />
@@ -97,7 +151,7 @@ function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<
           <MoonPhaseIcon elongation={moon.elongation} />
           <div className="flex flex-col text-[15px] leading-snug">
             <p>
-              <b>{moon.phase}</b> · Moon in {moon.signName}
+              <b>{moon.phase}</b> · Moon in {moon.signName} <Glyph sign={moon.sign} />
               {prefs.system === "vedic" && ` · ${moon.nakshatra}`}
             </p>
             {change && (
@@ -107,7 +161,60 @@ function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<
             )}
           </div>
         </div>
+        {!done.card && <NextStep href="#ritual-card" label="Pull a card for today" />}
 
+        <div id="ritual-card" className="mt-4 flex scroll-mt-4 flex-col gap-3">
+          <RitualHeading n={2} title="Pull today's card" done={done.card} />
+          <CardOfTheDay data={data} compact onPulled={() => markRitual(day.date, "card")} />
+        </div>
+
+        <div className="mt-4 flex flex-col gap-3">
+          <RitualHeading n={3} title="Your affirmation" done={done.affirmation} />
+          <section className="card">
+            <p className="eyebrow">Say it once, out loud or in your head</p>
+            <p className="headline">“{affirmation.text}”</p>
+            {done.affirmation ? (
+              <p className="font-bold" role="status">
+                You&apos;re carrying it with you today.
+              </p>
+            ) : (
+              <button type="button" className="btn mt-1 self-start" onClick={() => markRitual(day.date, "affirmation")}>
+                I&apos;ll carry this today
+              </button>
+            )}
+          </section>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-3">
+          <RitualHeading n={4} title="Write one line" done={done.write} />
+          <section className="card">
+            <p className="eyebrow">Today&apos;s prompt</p>
+            <p className="font-display text-[22px] leading-tight font-semibold">{journalPrompt(facts)}</p>
+            {done.write ? (
+              <p className="font-bold">Written. Lovely.</p>
+            ) : (
+              <Link href="/journal/" className="btn mt-1 self-start">
+                Write one line
+              </Link>
+            )}
+          </section>
+        </div>
+
+        {count === 4 && (
+          <section className="card items-center bg-butter text-center text-cocoa" role="status">
+            <p className="flex gap-1" aria-hidden>
+              <Star8 size={20} />
+              <Star8 size={26} />
+              <Star8 size={20} />
+            </p>
+            <p className="headline">You&apos;re all set for today.</p>
+            <p>See you tomorrow, {firstName}.</p>
+          </section>
+        )}
+
+        <div className="mt-4">
+          <LinkRow href="/week/" title="This week" sub="Where each planet is heading, and what it means for you" />
+        </div>
       </div>
     </div>
   );

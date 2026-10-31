@@ -44,6 +44,9 @@ export default function NumerologyPage() {
 
   return (
     <div className="flex flex-col gap-10">
+      <Link href="/locus/" className="link self-start py-2.5">
+        ← Your Locus
+      </Link>
       <PageHeader title="Your numbers" sub="Numerology from your birth date and your name." />
 
       <section className="grid gap-3 sm:grid-cols-3">

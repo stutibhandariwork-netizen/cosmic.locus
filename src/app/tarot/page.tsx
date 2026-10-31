@@ -1,19 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Loading } from "@/components/gate";
-import { CardBack, CardFace } from "@/components/tarot/card-back";
 import { DeckFan } from "@/components/tarot/deck-fan";
-import { Flip } from "@/components/tarot/flip-card";
-import { LinkRow, PageHeader, ReadingCard, Segmented } from "@/components/ui";
+import { allPositions, CardOfTheDay, freshDeck, TurnedCard } from "@/components/tarot/today-card";
+import { LinkRow, NextStep, PageHeader, Segmented } from "@/components/ui";
 import { voiceOf, YES_NO_ANSWER } from "@/lib/content/tarot-voice";
-import { deviceTimeZone, localDay } from "@/lib/chart";
+import { deviceTimeZone } from "@/lib/chart";
 import { fmtLocal } from "@/lib/format";
 import { useData, type Data } from "@/lib/store";
-import { DECK, type TarotCard } from "@/lib/tarot/deck";
-import { saveQuickReading } from "@/lib/tarot/local";
-import { DECK_SIZE, shuffleDeck } from "@/lib/tarot/shuffle";
+import { DECK } from "@/lib/tarot/deck";
 import { SPREADS, spreadByKey } from "@/lib/tarot/spreads";
 
 type Mode = "day" | "three" | "yesno";
@@ -39,73 +36,6 @@ export default function TarotPage() {
       {mode === "three" && <ThreeCards />}
       {mode === "yesno" && <YesNo />}
       <MoreReadings data={data} />
-    </div>
-  );
-}
-
-/** Turns a just-pulled card face up once; a card already seen this visit stays face up. */
-function TurnedCard({ card, seenKey, size = "sm", back = "star", className = "" }: { card: TarotCard; seenKey?: string; size?: "sm" | "lg"; back?: "star" | "checker"; className?: string }) {
-  const [up, setUp] = useState(false);
-  const [instant, setInstant] = useState(false);
-  useEffect(() => {
-    let seen = false;
-    try {
-      seen = !!seenKey && sessionStorage.getItem(seenKey) === "1";
-      if (seenKey) sessionStorage.setItem(seenKey, "1");
-    } catch {
-      // storage unavailable: the card just turns again
-    }
-    if (seen) {
-      setInstant(true);
-      setUp(true);
-      return;
-    }
-    const t = setTimeout(() => setUp(true), 120);
-    return () => clearTimeout(t);
-  }, [seenKey]);
-  return (
-    <Flip faceUp={up} instant={instant} className={className} label={card.name}>
-      <CardBack variant={back} className="size-full" />
-      <CardFace card={card} size={size} className="size-full" />
-    </Flip>
-  );
-}
-
-const freshDeck = () => shuffleDeck().order;
-const allPositions = Array.from({ length: DECK_SIZE }, (_, i) => i + 1);
-
-/** One card a day: pulled from the deck, saved, and shown again for the rest of the day. */
-function CardOfTheDay({ data }: { data: Data }) {
-  const todayStart = localDay(new Date(), deviceTimeZone()).start.toISOString();
-  const pulled = data.tarot.find((s) => s.spread === "CARD_OF_DAY" && s.createdAt >= todayStart && s.picks.length > 0);
-  const [order] = useState(freshDeck);
-
-  if (!pulled) {
-    return (
-      <DeckFan
-        positions={allPositions}
-        prompt="Take a breath and ask what today needs from you."
-        onPull={(p) => saveQuickReading("CARD_OF_DAY", order, [p])}
-      />
-    );
-  }
-  const card = DECK[pulled.deckOrder[pulled.picks[0] - 1]];
-  const v = voiceOf(card);
-  return (
-    <div className="flex flex-col gap-4">
-      <TurnedCard card={card} size="lg" seenKey={`day:${pulled.id}`} className="w-[180px] self-center rounded-[14px] shadow-[6px_6px_0_var(--lilac)]" />
-      <ReadingCard
-        eyebrow="Card of the day"
-        headline={v.headline}
-        action={
-          <Link href={`/journal/?card=${card.index}&spread=day`} className="btn">
-            Save to journal
-          </Link>
-        }
-      >
-        <p>{v.line}</p>
-        <p className="text-[15px] text-muted">Your card stays with you all day. Come back tomorrow to pull a new one.</p>
-      </ReadingCard>
     </div>
   );
 }
@@ -145,13 +75,11 @@ function ThreeCards() {
           onPull={(p) => setPicks([...picks, p])}
         />
       ) : (
-        <div className="flex flex-wrap justify-center gap-2.5">
-          <Link href={`/journal/?card=${cards.map((c) => c.index).join(",")}&spread=three`} className="btn">
-            Save to journal
-          </Link>
+        <div className="flex flex-col gap-2.5">
+          <NextStep href={`/journal/?card=${cards.map((c) => c.index).join(",")}&spread=three`} label="Write about these cards" />
           <button
             type="button"
-            className="btn-ghost"
+            className="btn-ghost self-center"
             onClick={() => {
               setPicks([]);
               setOrder(freshDeck());
@@ -222,14 +150,9 @@ function YesNo() {
               {card.name}: {voiceOf(card).line}
             </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-2.5">
-            <Link
-              href={`/journal/?card=${card.index}&spread=yesno${question.trim() ? `&q=${encodeURIComponent(question.trim())}` : ""}`}
-              className="btn"
-            >
-              Save to journal
-            </Link>
-            <button type="button" className="btn-ghost" onClick={reset}>
+          <div className="flex flex-col gap-2.5 self-stretch">
+            <NextStep href={`/journal/?card=${card.index}&spread=yesno${question.trim() ? `&q=${encodeURIComponent(question.trim())}` : ""}`} label="Write about this answer" />
+            <button type="button" className="btn-ghost self-center" onClick={reset}>
               Ask another question
             </button>
           </div>

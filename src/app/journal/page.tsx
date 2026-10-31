@@ -10,7 +10,7 @@ import { fmtLocal } from "@/lib/format";
 import { journalPrompt } from "@/lib/journal/core";
 import { newId, update, useData, type JournalEntry, type TarotSession } from "@/lib/store";
 import { autoSyncJournal, GoogleDocsCard } from "@/components/google-docs";
-import { PageHeader } from "@/components/ui";
+import { NextStep, PageHeader } from "@/components/ui";
 import { voiceOf, YES_NO_ANSWER } from "@/lib/content/tarot-voice";
 import { viewOf } from "@/lib/tarot/local";
 import { DECK } from "@/lib/tarot/deck";
@@ -127,9 +127,12 @@ function Journal() {
           Save
         </button>
         {saved && (
-          <p className="text-[15px]" role="status">
-            Saved. Lovely work.
-          </p>
+          <>
+            <p className="text-[15px]" role="status">
+              Saved. Lovely work.
+            </p>
+            <NextStep href="/" label="Back to today" />
+          </>
         )}
       </form>
 

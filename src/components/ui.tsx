@@ -98,3 +98,35 @@ export function LinkRow({ href, title, sub }: { href: string; title: string; sub
     </Link>
   );
 }
+
+/** The one clear next thing to do, at the end of every reading. */
+export function NextStep({ href, label, onClick }: { href: string; label: string; onClick?: () => void }) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className="mt-1 flex min-h-12 items-center justify-between gap-3 rounded-full border-2 border-outline bg-surface px-4 py-2 text-left hover:bg-surface-2"
+    >
+      <span className="flex min-w-0 flex-col leading-tight">
+        <span className="text-[13px] font-bold tracking-[0.14em] text-label uppercase">Next</span>
+        <span className="font-bold">{label}</span>
+      </span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </Link>
+  );
+}
+
+/** Heading for one step of Today's ritual, with a star that fills in when it's done. */
+export function RitualHeading({ n, title, done }: { n: number; title: string; done: boolean }) {
+  return (
+    <h2 className="flex items-center gap-2 px-1 font-display text-xl font-semibold">
+      <Star8 size={22} fill={done ? "var(--ochre)" : "none"} strokeWidth={1} />
+      <span>
+        {n} · {title}
+      </span>
+      <span className="sr-only">{done ? "(done)" : "(to do)"}</span>
+    </h2>
+  );
+}

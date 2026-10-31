@@ -4,8 +4,7 @@ import { Glyph } from "@/components/glyph";
 import Link from "next/link";
 import { useMemo } from "react";
 import { WithChart } from "@/components/gate";
-import { AREA_FILL, ReadingCard } from "@/components/ui";
-import { templateAffirmation } from "@/lib/affirmations";
+import { AREA_FILL, NextStep, ReadingCard } from "@/components/ui";
 import { dailyFacts } from "@/lib/astrology/daily";
 import { deviceTimeZone, localDay } from "@/lib/chart";
 import type { NatalChart } from "@/lib/engine";
@@ -25,7 +24,6 @@ function Day({ profile, chart, prefs }: { profile: Profile; chart: NatalChart; p
   const day = useMemo(() => localDay(new Date(), tz), [tz]);
   const r = useMemo(() => todayReading(profile, chart, prefs.system, day), [profile, chart, prefs.system, day]);
   const facts = useMemo(() => dailyFacts(chart, day.start, day.date), [chart, day]);
-  const affirmation = templateAffirmation(facts);
   const [, m, d] = profile.birthDate.split("-").map(Number);
   const personal = personalCycles(m, d, day.parts);
   const vedic = prefs.system === "vedic";
@@ -70,9 +68,6 @@ function Day({ profile, chart, prefs }: { profile: Profile; chart: NatalChart; p
         </section>
       ))}
 
-      <ReadingCard eyebrow="Today's affirmation" headline={`“${affirmation.text}”`}>
-        {vedic && <p className="text-[15px] text-muted">{affirmation.why}</p>}
-      </ReadingCard>
 
       {vedic && (facts.highlights.length > 0 || facts.dasha) && (
         <section className="card">
@@ -114,6 +109,7 @@ function Day({ profile, chart, prefs }: { profile: Profile; chart: NatalChart; p
           </Link>
         }
       />
+      <NextStep href="/#ritual-card" label="Pull a card for today" />
     </div>
   );
 }
