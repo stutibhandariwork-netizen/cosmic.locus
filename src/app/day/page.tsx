@@ -1,5 +1,6 @@
 "use client";
 
+import { SIGN_GLYPH } from "@/lib/content/glyphs";
 import Link from "next/link";
 import { useMemo } from "react";
 import { WithChart } from "@/components/gate";
@@ -11,7 +12,7 @@ import type { NatalChart } from "@/lib/engine";
 import { ordinal } from "@/lib/format";
 import { journalPrompt } from "@/lib/journal/core";
 import { personalCycles } from "@/lib/numerology/calc";
-import { PERSONAL_YEAR } from "@/lib/numerology/meanings";
+import { PERSONAL_DAY } from "@/lib/numerology/meanings";
 import type { Prefs, Profile } from "@/lib/store";
 import { todayReading } from "@/lib/today";
 
@@ -46,7 +47,7 @@ function Day({ profile, chart, prefs }: { profile: Profile; chart: NatalChart; p
         <p className="text-[15px] text-muted">{dateLabel}</p>
       </header>
 
-      <ReadingCard eyebrow={`Today · ${r.base.signName} ${r.base.body}`} headline={r.headline}>
+      <ReadingCard eyebrow={`Read from your ${r.base.body} in ${r.base.signName} ${SIGN_GLYPH[r.base.sign]}`} headline={r.headline}>
         <p>{r.body}</p>
         <p className="text-[15px] text-muted">
           Why: today the Moon is in {r.moonSign}, the {ordinal(r.house)} sign counted from your {r.base.signName} {r.base.body}. That part of your chart is
@@ -97,7 +98,7 @@ function Day({ profile, chart, prefs }: { profile: Profile; chart: NatalChart; p
           </Link>
         }
       >
-        <p>{PERSONAL_YEAR[personal.day]}</p>
+        <p>{PERSONAL_DAY[personal.day]}</p>
       </ReadingCard>
 
       <ReadingCard

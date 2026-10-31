@@ -31,4 +31,4 @@ export function todayReading(profile: Profile, chart: NatalChart, system: Zodiac
 
 export type TodayReading = ReturnType<typeof todayReading>;
 
-export const greetingFor = (hour: number) => (hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening");
+export const greetingFor = (hour: number) => (hour < 5 ? "Up late" : hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening");

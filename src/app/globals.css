@@ -145,6 +145,9 @@ body {
   .field {
     @apply block min-h-12 w-full rounded-[14px] border-2 border-outline bg-surface px-3.5 py-2 text-[17px] text-ink placeholder:text-muted disabled:opacity-50;
   }
+  .field[aria-invalid="true"] {
+    @apply border-rust;
+  }
   .label {
     @apply mb-1.5 block text-[15px] font-bold text-ink;
   }

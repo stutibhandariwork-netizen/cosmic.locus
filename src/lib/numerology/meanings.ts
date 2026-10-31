@@ -37,6 +37,19 @@ export const PERSONAL_YEAR: Record<number, string> = {
   9: "Completion: finish cycles, clear out and forgive before the next 1.",
 };
 
+/** Personal day meanings (personalCycles reduces the day to 1-9, so there are no master numbers). */
+export const PERSONAL_DAY: Record<number, string> = {
+  1: "A starting day. Begin the thing you've been circling, and trust your own idea first.",
+  2: "A gentle, together day. Listen more than you talk, and let someone meet you halfway.",
+  3: "A sociable, chatty day. Say it out loud, share a laugh, make something small.",
+  4: "A steady, get-it-done day. Pick one task and finish it properly.",
+  5: "A day for change. Take a different route, try something new, say yes to the unplanned.",
+  6: "A caring day. Look after home and the people close to you, and let them look after you.",
+  7: "A quiet, inward day. Take some time alone and let your thoughts settle.",
+  8: "A day for ambition. Ask for what you're worth and handle the money matter.",
+  9: "A clearing day. Finish things off, give something away and forgive what you can.",
+};
+
 const PLANET_DAY: Record<number, string> = { 1: "Sunday", 2: "Monday", 3: "Thursday", 4: "Saturday", 5: "Wednesday", 6: "Friday", 7: "Monday", 8: "Saturday", 9: "Tuesday" };
 const COLOURS: Record<number, string[]> = {
   1: ["gold", "orange"],

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { searchPlaces, type Place } from "@/lib/places";
+import { FORM_ERRORS } from "@/lib/content/onboarding";
 import { update, type Profile } from "@/lib/store";
 
 /** Birth details form. Saves to this device only, or hands the details to `onSubmit` (onboarding). */
@@ -24,14 +25,26 @@ export function ProfileForm({
   const [birthTime, setBirthTime] = useState(initial?.birthTime ?? "");
   const [timeUnknown, setTimeUnknown] = useState(initial ? initial.birthTime === null : false);
   const [place, setPlace] = useState<Profile["place"] | null>(initial?.place ?? null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ field: Field; message: string } | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  /** Shows the message under the field and moves focus there, so it's never below the fold. */
+  function fail(field: Field, message: string) {
+    setError({ field, message });
+    requestAnimationFrame(() => {
+      const el = formRef.current?.querySelector<HTMLElement>(`[data-field="${field}"]`);
+      el?.scrollIntoView({ block: "center", behavior: "smooth" });
+      el?.focus({ preventScroll: true });
+    });
+  }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim()) return setError("What should we call you? Add a name to carry on.");
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || birthDate < "1800-01-01" || new Date(birthDate) > new Date()) return setError("That birth date doesn't look quite right. Have another look?");
-    if (!timeUnknown && !/^\d{2}:\d{2}$/.test(birthTime)) return setError("Add your birth time, or tick the box if you're not sure.");
-    if (!place) return setError("Pick your birth place from the list as you type.");
+    if (!name.trim()) return fail("name", FORM_ERRORS.name);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || birthDate < "1800-01-01" || new Date(birthDate) > new Date()) return fail("date", FORM_ERRORS.date);
+    if (!timeUnknown && !/^\d{2}:\d{2}$/.test(birthTime)) return fail("time", FORM_ERRORS.time);
+    if (!place) return fail("place", FORM_ERRORS.place);
+    setError(null);
     const profile = { name: name.trim(), birthDate, birthTime: timeUnknown ? null : birthTime, place };
     if (onSubmit) return onSubmit(profile);
     update((d) => ({ ...d, profile }));
@@ -39,43 +52,51 @@ export function ProfileForm({
   }
 
   return (
-    <form onSubmit={submit} className={`flex flex-col gap-3.5 ${pinned ? "flex-1" : ""}`} noValidate>
+    <form ref={formRef} onSubmit={submit} className={`flex flex-col gap-3.5 ${pinned ? "flex-1" : ""}`} noValidate>
       <div>
         <label htmlFor="name" className="label">
           Your name
         </label>
-        <input id="name" className="field" value={name} onChange={(e) => setName(e.target.value)} autoComplete="given-name" placeholder="What should we call you?" />
+        <input id="name" data-field="name" aria-invalid={error?.field === "name"} aria-describedby={error?.field === "name" ? "form-error" : undefined} className="field" value={name} onChange={(e) => setName(e.target.value)} autoComplete="given-name" placeholder="What should we call you?" />
+        {error?.field === "name" && <FieldError message={error.message} />}
       </div>
       <div className="grid grid-cols-2 gap-2.5">
         <div className="min-w-0">
           <label htmlFor="birthDate" className="label">
             Birth date
           </label>
-          <input id="birthDate" type="date" className="field px-3" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} min="1800-01-01" />
+          <input id="birthDate" data-field="date" aria-invalid={error?.field === "date"} aria-describedby={error?.field === "date" ? "form-error" : undefined} type="date" className="field px-3" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} min="1800-01-01" />
         </div>
         <div className="min-w-0">
           <label htmlFor="birthTime" className="label">
             Birth time
           </label>
-          <input id="birthTime" type="time" className="field px-3" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} disabled={timeUnknown} />
+          <input id="birthTime" data-field="time" aria-invalid={error?.field === "time"} aria-describedby={error?.field === "time" ? "form-error" : undefined} type="time" className="field px-3" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} disabled={timeUnknown} />
         </div>
       </div>
+      {(error?.field === "date" || error?.field === "time") && <FieldError message={error.message} />}
       <label htmlFor="unknown" className="flex min-h-11 items-center gap-2.5 text-[15px] leading-snug">
         <input id="unknown" type="checkbox" className="size-[22px] shrink-0 accent-[var(--rust)]" checked={timeUnknown} onChange={(e) => setTimeUnknown(e.target.checked)} />
         <span>I&apos;m not sure of my time. A rough guess helps, and you can update it later.</span>
       </label>
-      <PlacePicker value={place} onChange={setPlace} />
-      {error && (
-        <p className="rounded-[14px] border-2 border-outline bg-warn-soft px-4 py-3 text-[15px]" role="alert">
-          {error}
-        </p>
-      )}
+      <PlacePicker value={place} onChange={setPlace} invalid={error?.field === "place"} />
+      {error?.field === "place" && <FieldError message={error.message} />}
       <button className={`btn btn-wide ${pinned ? "mt-auto" : "mt-2"}`}>{submitLabel}</button>
     </form>
   );
 }
 
-function PlacePicker({ value, onChange }: { value: Profile["place"] | null; onChange: (p: Profile["place"] | null) => void }) {
+type Field = "name" | "date" | "time" | "place";
+
+function FieldError({ message }: { message: string }) {
+  return (
+    <p id="form-error" role="alert" className="mt-1.5 rounded-[12px] border-2 border-rust bg-warn-soft px-3 py-2 text-[15px] font-bold">
+      {message}
+    </p>
+  );
+}
+
+function PlacePicker({ value, onChange, invalid = false }: { value: Profile["place"] | null; onChange: (p: Profile["place"] | null) => void; invalid?: boolean }) {
   const listId = useId();
   const [query, setQuery] = useState(value?.label ?? "");
   const [options, setOptions] = useState<Place[]>([]);
@@ -124,6 +145,9 @@ function PlacePicker({ value, onChange }: { value: Profile["place"] | null; onCh
       </label>
       <input
         id={`${listId}-input`}
+        data-field="place"
+        aria-invalid={invalid}
+        aria-describedby={invalid ? "form-error" : undefined}
         className="field"
         role="combobox"
         aria-expanded={open}

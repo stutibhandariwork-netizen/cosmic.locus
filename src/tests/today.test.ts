@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { computeNatalChart, localToUtc } from "@/lib/engine";
 import { bigThree, moonNow, moonSignChange, phaseName, seedOf } from "@/lib/sky";
 import type { Profile } from "@/lib/store";
-import { todayReading } from "@/lib/today";
+import { PERSONAL_DAY } from "@/lib/numerology/meanings";
+import { personalCycles } from "@/lib/numerology/calc";
+import { greetingFor, todayReading } from "@/lib/today";
 
 const profile: Profile = {
   name: "Asha",
@@ -81,5 +83,20 @@ describe("sky helpers", () => {
   it("seeds are stable", () => {
     expect(seedOf("a", 1)).toBe(seedOf("a", 1));
     expect(seedOf("a", 1)).not.toBe(seedOf("a", 2));
+  });
+});
+
+describe("small things", () => {
+  it("greets by the hour, including late at night", () => {
+    expect([0, 4, 5, 11, 12, 16, 17, 23].map(greetingFor)).toEqual([
+      "Up late", "Up late", "Good morning", "Good morning", "Good afternoon", "Good afternoon", "Good evening", "Good evening",
+    ]);
+  });
+
+  it("has a personal-day meaning for every value personalCycles can return", () => {
+    for (let d = 1; d <= 31; d++) {
+      const { day } = personalCycles(1, 21, { year: 2026, month: 11, day: d });
+      expect(PERSONAL_DAY[day], `day ${d}`).toBeTruthy();
+    }
   });
 });

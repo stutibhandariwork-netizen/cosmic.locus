@@ -1,5 +1,6 @@
 "use client";
 
+import { SIGN_GLYPH } from "@/lib/content/glyphs";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { MoonPhaseIcon, Sparkle, Star8, SunFace } from "@/components/art";
@@ -71,7 +72,7 @@ function Today({ profile, chart, prefs }: { profile: Profile; chart: ReturnType<
 
       <div className="flex flex-col gap-3.5 px-4 pt-1.5">
         <ReadingCard
-          eyebrow={`Today · ${reading.base.signName} ${reading.base.body}`}
+          eyebrow={`Read from your ${reading.base.body} in ${reading.base.signName} ${SIGN_GLYPH[reading.base.sign]}`}
           headline={reading.headline}
           action={
             <Link href="/day/" className="btn">
