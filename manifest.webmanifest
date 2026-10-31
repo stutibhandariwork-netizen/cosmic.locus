@@ -1,0 +1,16 @@
+{
+  "name": "Cosmic Locus",
+  "short_name": "Cosmic Locus",
+  "description": "Your sky, read for you every day: daily readings, your birth chart and tarot.",
+  "start_url": "/cosmic.locus/",
+  "scope": "/cosmic.locus/",
+  "display": "standalone",
+  "background_color": "#FFF6EC",
+  "theme_color": "#FFF6EC",
+  "icons": [
+    { "src": "/cosmic.locus/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/cosmic.locus/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/cosmic.locus/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/cosmic.locus/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
