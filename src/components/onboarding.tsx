@@ -3,18 +3,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { DawnSky } from "@/components/sky-art";
 import { ZodiacWheel } from "@/components/astrology/wheel";
+import { ContactForm } from "@/components/contact-form";
 import { ProfileForm } from "@/components/profile-form";
 import { CardFace } from "@/components/tarot/card-back";
 import { StarProgress } from "@/components/ui";
 import { chartFor } from "@/lib/chart";
 import { Glyph } from "@/components/glyph";
-import { DETAILS, INTRO, REVEAL, SYSTEM } from "@/lib/content/onboarding";
+import { CONTACT, DETAILS, INTRO, REVEAL, SYSTEM } from "@/lib/content/onboarding";
+import { sendEvent, signupConfigured } from "@/lib/signup";
 import { preloadPlaces } from "@/lib/places";
 import { bigThree } from "@/lib/sky";
-import { update, type Prefs, type Profile } from "@/lib/store";
+import { DEFAULT_PREFS, update, type Contact, type Prefs, type Profile } from "@/lib/store";
 import { DECK } from "@/lib/tarot/deck";
 
-type Step = "intro" | "details" | "system" | "reveal";
+type Step = "intro" | "details" | "contact" | "system" | "reveal";
 
 /** A sample wheel for the intro: Sun in Capricorn, Moon in Cancer, rising Taurus. */
 const SAMPLE_THREE: ReturnType<typeof bigThree> = {
@@ -26,6 +28,8 @@ const SAMPLE_THREE: ReturnType<typeof bigThree> = {
 export function Onboarding() {
   const [step, setStep] = useState<Step>("intro");
   const [details, setDetails] = useState<Profile | null>(null);
+  const [contact, setContact] = useState<Contact | null>(null);
+  const steps = signupConfigured ? 3 : 2;
   const [system, setSystem] = useState<Prefs["system"]>("vedic");
   const charts = useMemo(() => {
     if (!details) return null;
@@ -46,7 +50,10 @@ export function Onboarding() {
       <Reveal
         name={details.name.split(" ")[0]}
         three={charts[system]}
-        onDone={() => update((d) => ({ ...d, profile: details, prefs: { ...d.prefs, system } }))}
+        onDone={() => {
+          update((d) => ({ ...d, profile: details, contact, prefs: { ...d.prefs, system } }));
+          if (contact) sendEvent("signup", contact, details, { ...DEFAULT_PREFS, system });
+        }}
       />
     );
   }
@@ -86,7 +93,7 @@ export function Onboarding() {
 
         {step === "details" && (
           <>
-            <StarProgress step={1} of={2} />
+            <StarProgress step={1} of={steps} />
             <div className="flex flex-col gap-1">
               <h1 className="title">{DETAILS.title}</h1>
               <p>{DETAILS.sub}</p>
@@ -96,16 +103,39 @@ export function Onboarding() {
               submitLabel={DETAILS.next}
               onSubmit={(p) => {
                 setDetails(p);
-                setStep("system");
+                setStep(signupConfigured ? "contact" : "system");
               }}
               pinned
             />
           </>
         )}
 
+        {step === "contact" && (
+          <>
+            <StarProgress step={2} of={steps} />
+            <div className="flex flex-col gap-1">
+              <h1 className="title">{CONTACT.title}</h1>
+              <p>{CONTACT.sub}</p>
+            </div>
+            <ContactForm
+              initial={contact}
+              pinned
+              onSubmit={(c) => {
+                setContact(c);
+                setStep("system");
+              }}
+              extra={
+                <button type="button" className="btn-ghost w-full border-0 bg-transparent" onClick={() => setStep("details")}>
+                  {SYSTEM.back}
+                </button>
+              }
+            />
+          </>
+        )}
+
         {step === "system" && charts && (
           <>
-            <StarProgress step={2} of={2} />
+            <StarProgress step={steps} of={steps} />
             <div className="flex flex-col gap-1">
               <h1 className="title">{SYSTEM.title}</h1>
               <p>{SYSTEM.sub}</p>
@@ -139,8 +169,8 @@ export function Onboarding() {
               <button className="btn btn-wide" onClick={() => setStep("reveal")}>
                 {SYSTEM.cta}
               </button>
-              <button className="btn-ghost w-full border-0 bg-transparent" onClick={() => setStep("details")}>
-                {SYSTEM.back}
+              <button className="btn-ghost w-full border-0 bg-transparent" onClick={() => setStep(signupConfigured ? "contact" : "details")}>
+                {signupConfigured ? "Back" : SYSTEM.back}
               </button>
             </div>
           </>

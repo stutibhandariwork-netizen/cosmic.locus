@@ -52,6 +52,12 @@ export interface GoogleDocLink {
   syncedAt: string;
 }
 
+export interface Contact {
+  email: string;
+  phone: string | null;
+  consentAt: string;
+}
+
 export type RitualStep = "read" | "card" | "affirmation" | "write";
 
 export interface Data {
@@ -65,13 +71,17 @@ export interface Data {
   /** Visits (one per browser session), for the "add to home screen" hint from the second visit. */
   visits: number;
   installHintDismissed: boolean;
+  /** Email (and optional phone) given at sign-up, sent to the owner's sign-up sheet with consent. */
+  contact: Contact | null;
+  /** An existing user chose "Not now" when asked for their email. */
+  contactDismissed: boolean;
   tarot: TarotSession[];
   journal: JournalEntry[];
 }
 
 const KEY = "grahify-demo-v1";
 export const DEFAULT_PREFS: Prefs = { system: "vedic", comfort: false, astrologer: false };
-const EMPTY: Data = { profile: null, prefs: DEFAULT_PREFS, google: null, seenWelcome: false, ritual: { date: "", done: [] }, visits: 0, installHintDismissed: false, tarot: [], journal: [] };
+const EMPTY: Data = { profile: null, prefs: DEFAULT_PREFS, google: null, seenWelcome: false, ritual: { date: "", done: [] }, visits: 0, installHintDismissed: false, contact: null, contactDismissed: false, tarot: [], journal: [] };
 
 let cache: Data | null = null;
 const listeners = new Set<() => void>();

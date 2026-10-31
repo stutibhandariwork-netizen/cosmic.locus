@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Fraunces } from "next/font/google";
 import { BottomNav, TopBar } from "@/components/nav";
 import { BASE } from "@/lib/base-path";
+import { signupConfigured } from "@/lib/signup";
 import "./globals.css";
 
 const display = Fraunces({ variable: "--font-display", subsets: ["latin"], weight: ["400", "600"], style: ["normal", "italic"] });
@@ -29,7 +30,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <TopBar />
         <main className="mx-auto w-full max-w-[480px] px-4 pt-6 pb-8">{children}</main>
         <footer className="mx-auto max-w-[480px] px-5 pb-32 text-[13px] text-muted">
-          For reflection and fun. Everything you enter stays on this device. Place data ©{" "}
+          For reflection and fun. {signupConfigured ? "Your birth details, cards and notes stay on this device." : "Everything you enter stays on this device."} Place data ©{" "}
           <a className="underline" href="https://www.geonames.org/">
             GeoNames
           </a>{" "}

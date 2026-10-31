@@ -1,4 +1,5 @@
 import { DEFAULT_PREFS, type Data, type JournalEntry, type Prefs, type Profile, type TarotSession } from "./store";
+import { isEmail } from "./signup";
 import { SPREADS } from "./tarot/spreads";
 
 /**
@@ -59,6 +60,11 @@ function journalOf(x: unknown): JournalEntry | undefined {
   return { id: x.id, text: x.text, prompt: isStr(x.prompt) ? x.prompt : null, link, date: x.date, createdAt: x.createdAt };
 }
 
+function contactOf(x: unknown): Data["contact"] {
+  if (!isObj(x) || !isStr(x.email) || !isEmail(x.email) || !isStr(x.consentAt)) return null;
+  return { email: x.email, phone: isStr(x.phone) ? x.phone : null, consentAt: x.consentAt };
+}
+
 function prefsOf(x: unknown): Prefs {
   if (!isObj(x)) return DEFAULT_PREFS;
   return {
@@ -93,6 +99,8 @@ export function checkBackup(text: string): BackupCheck {
     ritual: { date: "", done: [] },
     visits: 0,
     installHintDismissed: raw.installHintDismissed === true,
+    contact: contactOf(raw.contact),
+    contactDismissed: raw.contactDismissed === true,
     tarot: tarot as TarotSession[],
     journal: journal as JournalEntry[],
   };

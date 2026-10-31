@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LogoMark } from "@/components/sky-art";
+import { signupConfigured } from "@/lib/signup";
 import { canPromptInstall, isInstalled, isIOS, onInstallAvailable, promptInstall } from "@/lib/install";
 import { update, type Data } from "@/lib/store";
 
@@ -17,7 +18,9 @@ export function InstallHint({ data }: { data: Data }) {
     return onInstallAvailable(read);
   }, []);
 
-  if (!env || env.installed || data.visits < 2 || data.installHintDismissed) return null;
+  // One ask at a time: wait until the "Stay in touch" card has been answered.
+  const askingForEmail = signupConfigured && !!data.profile && !data.contact && !data.contactDismissed;
+  if (!env || env.installed || data.visits < 2 || data.installHintDismissed || askingForEmail) return null;
 
   return (
     <section className="card flex-row gap-3 bg-indigo-soft" aria-labelledby="install-title">

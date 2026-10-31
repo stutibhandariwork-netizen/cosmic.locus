@@ -1,6 +1,7 @@
 "use client";
 
-import { update } from "./store";
+import { sendEvent } from "./signup";
+import { snapshot, update } from "./store";
 
 /** The browser's install prompt (Chrome and Android), saved for when the visitor taps our button. */
 interface InstallPrompt extends Event {
@@ -11,12 +12,17 @@ interface InstallPrompt extends Event {
 let deferred: InstallPrompt | null = null;
 const listeners = new Set<() => void>();
 
-/** Call once on load: counts this visit and listens for the install prompt. */
+/**
+ * Call once on load: counts this visit (once per browser session), logs it to the sign-up sheet
+ * for people who gave their email, and listens for the install prompt.
+ */
 export function startInstallWatch() {
   try {
     if (!sessionStorage.getItem("cl-visit")) {
       sessionStorage.setItem("cl-visit", "1");
       update((d) => ({ ...d, visits: d.visits + 1 }));
+      const { contact } = snapshot();
+      if (contact) sendEvent("visit", contact);
     }
   } catch {
     // no session storage: don't count

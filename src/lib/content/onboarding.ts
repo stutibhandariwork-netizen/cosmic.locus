@@ -55,3 +55,23 @@ export const WELCOME = {
   ],
   today: "Take me to today",
 };
+
+export const CONTACT = {
+  title: "Where can we reach you?",
+  sub: "So we know who's using Cosmic Locus. We'll never share it.",
+  email: "Email",
+  emailHint: "you@example.com",
+  phone: "Phone (optional)",
+  phoneHint: "+91 98765 43210",
+  consent:
+    "I agree that Cosmic Locus saves my email (and phone, if I add one), my first name and the dates I visit. My birth details stay on this phone. I can remove my email any time in Settings.",
+  errors: {
+    email: "That email doesn't look quite right. Have another look?",
+    phone: "That phone number doesn't look right. Use digits, with your country code if you like.",
+    consent: "Tick the box to say it's okay, then carry on.",
+  },
+  next: "Next",
+  existingTitle: "Stay in touch",
+  existingSub: "Add your email so we know you're here. Your birth details stay on this phone.",
+  later: "Not now",
+};

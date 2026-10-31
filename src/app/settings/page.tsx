@@ -5,16 +5,19 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogoMark } from "@/components/sky-art";
 import { Loading } from "@/components/gate";
+import { ContactForm } from "@/components/contact-form";
 import { ProfileForm } from "@/components/profile-form";
 import { RestoreBackup } from "@/components/restore-backup";
 import { PageHeader, Segmented } from "@/components/ui";
-import { clearAll, setPrefs, useData } from "@/lib/store";
+import { sendEvent, signupConfigured } from "@/lib/signup";
+import { clearAll, setPrefs, update, useData } from "@/lib/store";
 
 export default function SettingsPage() {
   const data = useData();
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [confirm, setConfirm] = useState("");
+  const [editingContact, setEditingContact] = useState(false);
   if (!data) return <Loading />;
 
   function download() {
@@ -30,7 +33,7 @@ export default function SettingsPage() {
       <Link href="/" className="link self-start py-2.5">
         ← Today
       </Link>
-      <PageHeader title="Settings" sub="Everything here stays in this browser." />
+      <PageHeader title="Settings" sub={signupConfigured ? "Your chart, cards and notes stay in this browser." : "Everything here stays in this browser."} />
 
       <section className="flex flex-col gap-3">
         <h2 className="h2 px-1">How you see things</h2>
@@ -98,12 +101,60 @@ export default function SettingsPage() {
         </section>
       )}
 
+      {signupConfigured && (
+        <section className="flex flex-col gap-3">
+          <h2 className="h2 px-1">Your email</h2>
+          {editingContact || !data.contact ? (
+            <div className="card">
+              <ContactForm
+                initial={data.contact}
+                submitLabel="Save"
+                onSubmit={(c) => {
+                  update((d) => ({ ...d, contact: c }));
+                  sendEvent("signup", c, data.profile, data.prefs);
+                  setEditingContact(false);
+                }}
+                extra={
+                  data.contact && (
+                    <button className="btn-ghost w-full border-0 bg-transparent" onClick={() => setEditingContact(false)}>
+                      Cancel
+                    </button>
+                  )
+                }
+              />
+            </div>
+          ) : (
+            <div className="card">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="font-bold break-all">{data.contact.email}</p>
+                  {data.contact.phone && <p className="text-[15px]">{data.contact.phone}</p>}
+                  <p className="text-[13px] text-muted">Shared with Cosmic Locus since {new Date(data.contact.consentAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}.</p>
+                </div>
+                <button className="btn-ghost shrink-0" onClick={() => setEditingContact(true)}>
+                  Edit
+                </button>
+              </div>
+              <button
+                className="min-h-11 self-start text-[15px] font-bold text-label underline"
+                onClick={() => {
+                  sendEvent("delete", data.contact!);
+                  update((d) => ({ ...d, contact: null, contactDismissed: true }));
+                }}
+              >
+                Remove my email from Cosmic Locus
+              </button>
+            </div>
+          )}
+        </section>
+      )}
+
       <section className="flex flex-col gap-3">
         <h2 className="h2 px-1">Your data</h2>
         <div className="card">
           <p>
             {data.tarot.length} tarot spread{data.tarot.length === 1 ? "" : "s"} and {data.journal.length} journal note{data.journal.length === 1 ? "" : "s"} are saved
-            on this device. Nothing is sent to a server.
+            on this device. {signupConfigured ? "Only your email, phone and visit dates go to Cosmic Locus." : "Nothing is sent to a server."}
           </p>
           <button className="btn-ghost self-start" onClick={download}>
             Download my data
@@ -119,11 +170,15 @@ export default function SettingsPage() {
           onSubmit={(e) => {
             e.preventDefault();
             if (confirm.trim() !== "DELETE") return;
+            if (data.contact) sendEvent("delete", data.contact);
             clearAll();
             router.push("/");
           }}
         >
-          <p>This removes your birth details, tarot spreads and journal from this browser. It can&apos;t be undone.</p>
+          <p>
+            This removes your birth details, tarot spreads and journal from this browser
+            {signupConfigured ? ", and your email from Cosmic Locus" : ""}. It can&apos;t be undone.
+          </p>
           <label htmlFor="confirm" className="label mt-1 mb-0">
             Type DELETE to confirm
           </label>
