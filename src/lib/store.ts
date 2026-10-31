@@ -43,16 +43,24 @@ export interface Prefs {
   comfort: boolean;
 }
 
+/** The Google Doc the journal is copied to, if the visitor connected Google Docs. */
+export interface GoogleDocLink {
+  docId: string;
+  url: string;
+  syncedAt: string;
+}
+
 export interface Data {
   profile: Profile | null;
   prefs: Prefs;
+  google: GoogleDocLink | null;
   tarot: TarotSession[];
   journal: JournalEntry[];
 }
 
 const KEY = "grahify-demo-v1";
 export const DEFAULT_PREFS: Prefs = { system: "vedic", comfort: false };
-const EMPTY: Data = { profile: null, prefs: DEFAULT_PREFS, tarot: [], journal: [] };
+const EMPTY: Data = { profile: null, prefs: DEFAULT_PREFS, google: null, tarot: [], journal: [] };
 
 let cache: Data | null = null;
 const listeners = new Set<() => void>();
@@ -108,6 +116,9 @@ function subscribe(l: () => void) {
 export function useData(): Data | null {
   return useSyncExternalStore(subscribe, read, () => null);
 }
+
+/** The current data, outside React (e.g. right after an update). */
+export const snapshot = () => read();
 
 export const setPrefs = (p: Partial<Prefs>) => update((d) => ({ ...d, prefs: { ...d.prefs, ...p } }));
 

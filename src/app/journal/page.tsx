@@ -9,6 +9,7 @@ import { chartFor, deviceTimeZone, localDay } from "@/lib/chart";
 import { fmtLocal } from "@/lib/format";
 import { journalPrompt } from "@/lib/journal/core";
 import { newId, update, useData, type JournalEntry, type TarotSession } from "@/lib/store";
+import { autoSyncJournal, GoogleDocsCard } from "@/components/google-docs";
 import { PageHeader } from "@/components/ui";
 import { voiceOf, YES_NO_ANSWER } from "@/lib/content/tarot-voice";
 import { viewOf } from "@/lib/tarot/local";
@@ -85,6 +86,7 @@ function Journal() {
       createdAt: new Date().toISOString(),
     };
     update((d) => ({ ...d, journal: [entry, ...d.journal] }));
+    void autoSyncJournal();
     setText("");
     setSaved(true);
   }
@@ -157,7 +159,10 @@ function Journal() {
                   <p className="whitespace-pre-wrap">{e.text}</p>
                   <button
                     className="min-h-11 self-end px-2 text-[15px] font-bold text-label underline"
-                    onClick={() => update((d) => ({ ...d, journal: d.journal.filter((x) => x.id !== e.id) }))}
+                    onClick={() => {
+                      update((d) => ({ ...d, journal: d.journal.filter((x) => x.id !== e.id) }));
+                      void autoSyncJournal();
+                    }}
                   >
                     Delete
                   </button>
@@ -167,6 +172,8 @@ function Journal() {
           </ol>
         )}
       </section>
+
+      <GoogleDocsCard data={data} />
     </div>
   );
 }
